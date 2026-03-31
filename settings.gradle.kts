@@ -1,0 +1,1 @@
+rootProject.name = "QA_assigment-spring-2026"
