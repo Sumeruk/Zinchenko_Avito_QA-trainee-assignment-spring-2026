@@ -1,0 +1,1 @@
+# Zinchenko_Avito_QA-trainee-assignment-spring-2026
