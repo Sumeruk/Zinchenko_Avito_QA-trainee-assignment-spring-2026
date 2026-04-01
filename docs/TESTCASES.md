@@ -27,9 +27,9 @@ _________
   "price": 15000,
   "statistics":
     {
-      "likes": 0,
-      "viewCount": 0,
-      "contacts": 0
+      "likes": 2,
+      "viewCount": 3,
+      "contacts": 1
     }
 }
 ```
@@ -39,12 +39,21 @@ _________
 - тело ответа:
 ```
 {
-    "status": "Сохранили объявление - {UUID объявления}"
+  "id": "UUID-объявления",
+  "sellerId": 111111,
+  "name": "Т001",
+  "price": 15000,
+  "statistics": {
+    "likes": 2,
+    "viewCount": 3,
+    "contacts": 1
+  },
+  "createdAt": "YYYY-MM-DD HH:MM:SS.MS +0300"
 }
 ```
 
 Постусловие:
-- отправить DELETE {{baseUrl}}/{{api2}}/item/{UUID объявления}
+- отправить DELETE {{baseUrl}}/{{api2}}/item/{UUID-объявления}
 
 <ins>**ID: TAS-002**</ins> 
 
@@ -75,12 +84,21 @@ _________
 - тело ответа:
 ```
 {
-    "status": "Сохранили объявление - {UUID объявления}"
+  "id": "UUID-объявления",
+  "sellerId": -111111,
+  "name": "Т001",
+  "price": 15000,
+  "statistics": {
+    "likes": 0,
+    "viewCount": 0,
+    "contacts": 0
+  },
+  "createdAt": "YYYY-MM-DD HH:MM:SS.MS +0300"
 }
 ```
 
 Постусловие:
-- отправить DELETE {{baseUrl}}/{{api2}}/item/{UUID объявления}
+- отправить DELETE {{baseUrl}}/{{api2}}/item/{UUID-объявления}
 
 <ins>**ID: TAS-003**</ins> 
 
@@ -111,17 +129,22 @@ _________
 - тело ответа:
 ```
 {
-    "status": "Сохранили объявление - {UUID объявления}"
+  "id": "UUID-объявления",
+  "sellerId": 0,
+  "name": "Т001",
+  "price": 15000,
+  "statistics": {
+    "likes": 0,
+    "viewCount": 0,
+    "contacts": 0
+  },
+  "createdAt": "YYYY-MM-DD HH:MM:SS.MS +0300"
 }
 ```
 
 Постусловие:
-- отправить DELETE {{baseUrl}}/{{api2}}/item/{UUID объявления}
+- отправить DELETE {{baseUrl}}/{{api2}}/item/{UUID-объявления}
 
-
-
-Постусловие:
-- отправить DELETE {{baseUrl}}/{{api2}}/item/{UUID объявления}
 
 ### Создание объявления негативные
 <ins>**ID: TAS-004**</ins>
