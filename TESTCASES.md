@@ -8,7 +8,7 @@ api2: <ins> /api/2 </ins>
 _________
 ### Тест-кейсы:
 - [Создание объявления позитивные](https://github.com/Sumeruk/Zinchenko_Avito_QA-trainee-assignment-spring-2026/blob/main/TESTCASES.md#%D1%81%D0%BE%D0%B7%D0%B4%D0%B0%D0%BD%D0%B8%D0%B5-%D0%BE%D0%B1%D1%8A%D1%8F%D0%B2%D0%BB%D0%B5%D0%BD%D0%B8%D1%8F-%D0%BF%D0%BE%D0%B7%D0%B8%D1%82%D0%B8%D0%B2%D0%BD%D1%8B%D0%B5)
-- [Создание объявления негативные](https://github.com/Sumeruk/Zinchenko_Avito_QA-trainee-assignment-spring-2026/blob/main/TESTCASES.md#%D1%81%D0%BE%D0%B7%D0%B4%D0%B0%D0%BD%D0%B8%D0%B5-%D0%BE%D0%B1%D1%8A%D1%8F%D0%B2%D0%BB%D0%B5%D0%BD%D0%B8%D1%8F-%D0%BD%D0%B5%D0%B3%D0%B0%D1%82%D0%B8%D0%B2%D0%BD%D1%8B%D0%B5))
+- [Создание объявления негативные](https://github.com/Sumeruk/Zinchenko_Avito_QA-trainee-assignment-spring-2026/blob/main/TESTCASES.md#%D1%81%D0%BE%D0%B7%D0%B4%D0%B0%D0%BD%D0%B8%D0%B5-%D0%BE%D0%B1%D1%8A%D1%8F%D0%B2%D0%BB%D0%B5%D0%BD%D0%B8%D1%8F-%D0%BD%D0%B5%D0%B3%D0%B0%D1%82%D0%B8%D0%B2%D0%BD%D1%8B%D0%B5)
 
 ### Создание объявления позитивные
 
@@ -118,7 +118,12 @@ _________
 Постусловие:
 - отправить DELETE {{baseUrl}}/{{api2}}/item/{UUID объявления}
 
-### Создание объявления (негативные)
+
+
+Постусловие:
+- отправить DELETE {{baseUrl}}/{{api2}}/item/{UUID объявления}
+
+### Создание объявления негативные
 <ins>**ID: TAS-004**</ins>
 
 Название: Создание объявления с некорректными sellerId
@@ -191,10 +196,10 @@ _________
 ```
 {
     "result": {
-        "message": "",
+        "message": "не передано тело объявления",
         "messages": {}
     },
-    "status": "не передано тело объявления"
+    "status": "400"
 }
 ```
 
@@ -256,10 +261,10 @@ _________
 ```
 {
     "result": {
-        "message": "",
+        "message": "не передан объект - объявление",
         "messages": {}
     },
-    "status": "не передан объект - объявление"
+    "status": "400"
 }
 ```
 
@@ -267,7 +272,9 @@ _________
 
 <ins>**ID: TAS-006**</ins> 
 
-Название: Создание объявления негативное с некорректным name
+Название: Создание объявления негативное с пустым name
+
+Описание: объявление не может быть с пустым названием
 
 Предусловие: нет
 
@@ -275,8 +282,8 @@ _________
 - отправить POST {{baseUrl}}/{{api1}}/item c телом
 ```
 {
-  "sellerID": -111111,
-  "name": "Т001",
+  "sellerID": 123443,
+  "name": "",
   "price": 15000,
   "statistics":
     {
@@ -288,13 +295,85 @@ _________
 ```
 
 Ожидаемый результат:
-- status Code 200
+- status Code 400
 - тело ответа:
 ```
 {
-    "status": "Сохранили объявление - {UUID объявления}"
+    "result": {
+        "message": "поле name обязательно",
+        "messages": {}
+    },
+    "status": "400"
 }
 ```
 
+<ins>**ID: TAS-007**</ins> 
+
+Название: Создание объявления негативное с отрицательным price
+
+Предусловие: нет
+
+Шаги:
+- отправить POST {{baseUrl}}/{{api1}}/item c телом
+```
+{
+  "sellerID": 123443,
+  "name": "TOS",
+  "price": -15000,
+  "statistics":
+    {
+      "likes": 0,
+      "viewCount": 0,
+      "contacts": 0
+    }
+}
+```
+
+Ожидаемый результат:
+- status Code 400
+- тело ответа:
+```
+{
+    "result": {
+        "message": "поле price обязательно",
+        "messages": {}
+    },
+    "status": "400"
+}
+```
+<ins>**ID: TAS-007**</ins> 
+
+Название: Создание объявления негативное с нулевым price
+
+Предусловие: нет
+
+Шаги:
+- отправить POST {{baseUrl}}/{{api1}}/item c телом
+```
+{
+  "sellerID": 123443,
+  "name": "TOS",
+  "price": 0,
+  "statistics":
+    {
+      "likes": 0,
+      "viewCount": 0,
+      "contacts": 0
+    }
+}
+```
+
+Ожидаемый результат:
+- status Code 400
+- тело ответа:
+```
+{
+    "result": {
+        "message": "поле price обязательно",
+        "messages": {}
+    },
+    "status": "400"
+}
+```
 
 
