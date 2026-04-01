@@ -48,7 +48,7 @@ _________
     "viewCount": 3,
     "contacts": 1
   },
-  "createdAt": "YYYY-MM-DD HH:MM:SS.MS +0300 +0300"
+  "createdAt": "YYYY-MM-DD HH:MM:SS.MS +0300"
 }
 ```
 
@@ -93,7 +93,7 @@ _________
     "viewCount": 0,
     "contacts": 0
   },
-  "createdAt": "YYYY-MM-DD HH:MM:SS.MS +0300 +0300"
+  "createdAt": "YYYY-MM-DD HH:MM:SS.MS +0300"
 }
 ```
 
@@ -138,7 +138,7 @@ _________
     "viewCount": 0,
     "contacts": 0
   },
-  "createdAt": "YYYY-MM-DD HH:MM:SS.MS +0300 +0300"
+  "createdAt": "YYYY-MM-DD HH:MM:SS.MS +0300"
 }
 ```
 
