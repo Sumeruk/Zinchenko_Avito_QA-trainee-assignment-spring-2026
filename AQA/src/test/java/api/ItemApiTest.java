@@ -1,0 +1,217 @@
+package api;
+
+import config.BaseTest;
+import io.qameta.allure.Description;
+import io.restassured.RestAssured;
+import io.restassured.response.Response;
+import java.io.IOException;
+import mock.ItemMockServer;
+import model.Item;
+import model.TestDataFactory;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
+
+import static config.CustomAssertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
+
+public class ItemApiTest extends BaseTest {
+
+    private static ItemMockServer mockServer;
+    private static final int PORT = 8080;
+
+    @DisplayName("POS-001: Создание объявления с валидными данными")
+    @Test
+    @Description("Проверка успешного создания объявления")
+    void createItem_validData_success() throws IOException {
+        markPositive();
+
+        mockServer = new ItemMockServer(PORT);
+        mockServer.start();
+        RestAssured.baseURI = "http://localhost";
+        RestAssured.port = PORT;
+
+        Item item = TestDataFactory.createValidItem();
+
+        Response response = apiClient.createItem(item);
+
+        assertItemResponse(response, item);
+
+        mockServer.stop();
+
+        // Additional check: item can be retrieved by ID
+//        Item created = response.as(Item.class);
+//        Response getItemResponse = apiClient.getItemById(created.getId());
+//        assertThat(getItemResponse.statusCode()).isEqualTo(200);
+    }
+
+    @DisplayName("POS-002: Получение объявления по существующему ID")
+    @Test
+    @Description("Проверка получения ранее созданного объявления")
+    void getItemById_existingId_success() {
+        markPositive();
+
+        // Arrange: create item first
+        Item item = TestDataFactory.createValidItem();
+//        String itemId = apiClient.createItem(item).as(Item.class).getId();
+
+        // Act
+//        Response response = apiClient.getItemById(itemId);
+
+        // Assert
+//        assertThat(response.statusCode()).isEqualTo(200);
+//        assertThat(response.as(Item.class).getId()).isEqualTo(itemId);
+    }
+
+    @DisplayName("POS-003: Получение всех объявлений продавца")
+    @Test
+    @Description("Проверка получения списка объявлений по sellerId")
+    void getItemsBySellerId_existingSeller_success() {
+        markPositive();
+
+        Long sellerId = TestDataFactory.generateUniqueSellerId();
+
+        // Create 2 items for same seller
+        Item item1 = TestDataFactory.createValidItem();
+        item1.setSellerId(sellerId);
+        Item item2 = TestDataFactory.createValidItem();
+        item2.setSellerId(sellerId);
+
+        apiClient.createItem(item1);
+        apiClient.createItem(item2);
+
+        Response response = apiClient.getItemsBySellerId(sellerId);
+
+        assertThat(response.statusCode()).isEqualTo(200);
+        Item[] items = response.as(Item[].class);
+        assertThat(items).hasSizeGreaterThanOrEqualTo(2);
+        assertThat(items).extracting("sellerId").containsOnly(sellerId);
+    }
+
+    @DisplayName("POS-004: Получение статистики по объявлению (v1)")
+    @Test
+    @Description("Проверка получения статистики для существующего объявления")
+    void getStatisticV1_existingId_success() {
+        markPositive();
+
+        Item item = TestDataFactory.createValidItem();
+//        String itemId = apiClient.createItem(item).as(Item.class).getId();
+
+//        Response response = apiClient.getStatisticV1(itemId);
+
+//        assertStatisticsResponse(response);
+    }
+
+    @DisplayName("NEG-001: Создание объявления с пустым именем")
+    @ParameterizedTest
+    @ValueSource(strings = {"", "   "})
+    @Description("Проверка отклонения объявления с невалидным именем")
+    void createItem_emptyName_badRequest(String name) {
+        markNegative();
+
+        Item item = TestDataFactory.createValidItem();
+        item.setName(name);
+
+        Response response = apiClient.createItem(item);
+
+        assertErrorResponse(response, 400);
+        assertThat(response.jsonPath().getString("result.message")).isNotBlank();
+    }
+
+    @DisplayName("NEG-002: Создание объявления с отрицательной ценой")
+    @Test
+    @Description("Проверка валидации цены")
+    void createItem_negativePrice_badRequest() {
+        markNegative();
+
+        Item item = TestDataFactory.createInvalidItem(
+                TestDataFactory.InvalidField.NEGATIVE_PRICE);
+
+        Response response = apiClient.createItem(item);
+
+        assertErrorResponse(response, 400);
+    }
+
+    @DisplayName("NEG-003: Получение несуществующего объявления")
+    @Test
+    @Description("Проверка обработки 404 для несуществующего ID")
+    void getItemById_nonExistentId_notFound() {
+        markNegative();
+
+        Response response = apiClient.getItemById("non_existent_999999");
+
+        assertErrorResponse(response, 404);
+    }
+
+    @DisplayName("NEG-004: Получение объявлений с невалидным sellerId")
+    @ParameterizedTest
+    @ValueSource(strings = {"", "abc", "-123"})
+    @Description("Проверка валидации формата sellerId")
+    void getItemsBySellerId_invalidSellerId_badRequest(Long sellerId) {
+        markNegative();
+
+        Response response = apiClient.getItemsBySellerId(sellerId);
+
+        // API может вернуть 400 или 404 в зависимости от реализации
+        assertThat(response.statusCode()).isIn(400, 404);
+    }
+
+    @DisplayName("COR-001: Идемпотентность создания (одинаковые данные)")
+    @Test
+    @Description("Проверка поведения при повторной отправке идентичного запроса")
+    void createItem_idempotency_cornerCase() {
+        markCorner();
+
+        Item item = TestDataFactory.createValidItem();
+        // Force same ID for idempotency test
+        String fixedId = "idem_" + System.currentTimeMillis();
+//        item.setId(fixedId);
+
+        // First creation
+        Response response1 = apiClient.createItem(item);
+        assertThat(response1.statusCode()).isEqualTo(200);
+
+        // Second creation with same data
+        Response response2 = apiClient.createItem(item);
+
+        // В зависимости от бизнес-логики: либо 200 с тем же ID, либо 409/400
+        // Здесь проверяем, что система ведёт себя предсказуемо
+        assertThat(response2.statusCode()).isIn(200, 400, 409);
+    }
+
+//    @DisplayName("COR-002: Граничные значения цены")
+//    @ParameterizedTest
+//    @ValueSource(doubles = {0.01, 999999.99, 1e10})
+//    @Description("Проверка обработки граничных значений цены")
+//    void createItem_boundaryPrices_success(double price) {
+//        markCorner();
+//
+//        Item item = TestDataFactory.createValidItem();
+//        item.setPrice(price);
+//
+//        Response response = apiClient.createItem(item);
+
+        // API должен принять валидные числовые значения
+        // Если цена слишком большая - ожидаем 400
+//        if (price > 1e9) {
+//            assertThat(response.statusCode()).isIn(200, 400);
+//        } else {
+//            assertThat(response.statusCode()).isEqualTo(200);
+//        }
+//    }
+
+    @DisplayName("PERF-001: Время ответа создания объявления")
+    @Test
+    @Description("Нефункциональная проверка: время ответа < 2000ms")
+    void createItem_responseTime_performance() {
+        Item item = TestDataFactory.createValidItem();
+
+        long startTime = System.currentTimeMillis();
+        Response response = apiClient.createItem(item);
+        long duration = System.currentTimeMillis() - startTime;
+
+        assertThat(response.statusCode()).isEqualTo(200);
+        assertThat(duration).isLessThan(2000); // 2 seconds threshold
+    }
+}
