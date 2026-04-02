@@ -9,7 +9,15 @@ _________
 ### Тест-кейсы:
 - [Создание объявления позитивные](https://github.com/Sumeruk/Zinchenko_Avito_QA-trainee-assignment-spring-2026/blob/main/TESTCASES.md#%D1%81%D0%BE%D0%B7%D0%B4%D0%B0%D0%BD%D0%B8%D0%B5-%D0%BE%D0%B1%D1%8A%D1%8F%D0%B2%D0%BB%D0%B5%D0%BD%D0%B8%D1%8F-%D0%BF%D0%BE%D0%B7%D0%B8%D1%82%D0%B8%D0%B2%D0%BD%D1%8B%D0%B5)
 - [Создание объявления негативные](https://github.com/Sumeruk/Zinchenko_Avito_QA-trainee-assignment-spring-2026/blob/main/TESTCASES.md#%D1%81%D0%BE%D0%B7%D0%B4%D0%B0%D0%BD%D0%B8%D0%B5-%D0%BE%D0%B1%D1%8A%D1%8F%D0%B2%D0%BB%D0%B5%D0%BD%D0%B8%D1%8F-%D0%BD%D0%B5%D0%B3%D0%B0%D1%82%D0%B8%D0%B2%D0%BD%D1%8B%D0%B5)
+- [Удаление объявления позитивные]
+- [Удаление объявления негативные]
+- [Получение объявлений продавца позитивные]
+- [Получение объявлений продавца негативные]
+- [Получение статистики объявления позитивные]
+- [Получение статистики объявления негативные]
+- [Создание объявления корнер-кейсы]
 
+ 
 ### Создание объявления позитивные
 
 <ins>**ID: TAS-001**</ins>
@@ -54,8 +62,97 @@ _________
 
 Постусловие:
 - отправить DELETE {{baseUrl}}/{{api2}}/item/{UUID-объявления}
+ 
+<ins>**ID: TAS-002**</ins>
 
-<ins>**ID: TAS-002**</ins> 
+Название: Создание объявления позитивное многократное
+
+Предусловие: нет
+
+Шаги:
+- отправить POST {{baseUrl}}/{{api1}}/item c телом
+```
+{
+  "sellerID": 111111,
+  "name": "Т001",
+  "price": 15000,
+  "statistics":
+    {
+      "likes": 2,
+      "viewCount": 3,
+      "contacts": 1
+    }
+}
+```
+- записать полученный UUID-объявления
+- отправить POST {{baseUrl}}/{{api1}}/item c телом
+```
+{
+  "sellerID": 111111,
+  "name": "Т001",
+  "price": 15000,
+  "statistics":
+    {
+      "likes": 2,
+      "viewCount": 3,
+      "contacts": 1
+    }
+}
+```
+- записать полученный UUID-объявления
+
+Ожидаемый результат:
+- status Code 200
+- UUID-объявлений отличаются
+
+Постусловие:
+- отправить DELETE {{baseUrl}}/{{api2}}/item/{UUID-объявления первого}
+- отправить DELETE {{baseUrl}}/{{api2}}/item/{UUID-объявления второго}
+
+ 
+<ins>**ID: TAS-003**</ins>
+
+Название: Создание объявления позитивное с максимальным price
+
+Предусловие: нет
+
+Шаги:
+- отправить POST {{baseUrl}}/{{api1}}/item c телом
+```
+{
+  "sellerID": 111111,
+  "name": "Т001",
+  "price":  9223372036854775807,
+  "statistics":
+    {
+      "likes": 2,
+      "viewCount": 3,
+      "contacts": 1
+    }
+}
+```
+
+Ожидаемый результат:
+- status Code 200
+- тело ответа:
+```
+{
+  "id": "UUID-объявления",
+  "sellerId": 111111,
+  "name": "Т001",
+  "price": 9223372036854775807,
+  "statistics": {
+    "likes": 2,
+    "viewCount": 3,
+    "contacts": 1
+  },
+  "createdAt": "yyyy-MM-dd HH:mm:ss.SSSSSS Z Z"
+}
+```
+
+Постусловие:
+- отправить DELETE {{baseUrl}}/{{api2}}/item/{UUID-объявления}
+<ins>**ID: TAS-004**</ins> 
 
 Название: Создание объявления позитивное c отрицательным sellerId
 
@@ -100,7 +197,8 @@ _________
 Постусловие:
 - отправить DELETE {{baseUrl}}/{{api2}}/item/{UUID-объявления}
 
-<ins>**ID: TAS-003**</ins> 
+ 
+<ins>**ID: TAS-005**</ins> 
 
 Название: Создание объявления позитивное c нулевым sellerId
 
@@ -145,9 +243,145 @@ _________
 Постусловие:
 - отправить DELETE {{baseUrl}}/{{api2}}/item/{UUID-объявления}
 
+ 
+<ins>**ID: TAS-006**</ins> 
 
+Название: Создание объявления позитивное c ненулевым likes
+
+Предусловие: нет
+
+Шаги:
+- отправить POST {{baseUrl}}/{{api1}}/item c телом
+```
+{
+  "sellerID": 123443,
+  "name": "Т001",
+  "price": 15000,
+  "statistics":
+    {
+      "likes": 12,
+      "viewCount": 0,
+      "contacts": 0
+    }
+}
+```
+
+Ожидаемый результат:
+- status Code 200
+- тело ответа:
+```
+{
+  "id": "UUID-объявления",
+  "sellerID": 123443,
+  "name": "Т001",
+  "price": 15000,
+  "statistics":
+    {
+      "likes": 12,
+      "viewCount": 0,
+      "contacts": 0
+    },
+  "createdAt": "yyyy-MM-dd HH:mm:ss.SSSSSS Z Z"
+}
+```
+
+Постусловие:
+- отправить DELETE {{baseUrl}}/{{api2}}/item/{UUID-объявления}
+
+ 
+<ins>**ID: TAS-007**</ins> 
+
+Название: Создание объявления позитивное c ненулевым viewCount
+
+Предусловие: нет
+
+Шаги:
+- отправить POST {{baseUrl}}/{{api1}}/item c телом
+```
+{
+  "sellerID": 123443,
+  "name": "Т001",
+  "price": 15000,
+  "statistics":
+    {
+      "likes": 0,
+      "viewCount": 12,
+      "contacts": 0
+    }
+}
+```
+
+Ожидаемый результат:
+- status Code 200
+- тело ответа:
+```
+{
+  "id": "UUID-объявления",
+  "sellerID": 123443,
+  "name": "Т001",
+  "price": 15000,
+  "statistics":
+    {
+      "likes": 0,
+      "viewCount": 12,
+      "contacts": 0
+    },
+  "createdAt": "yyyy-MM-dd HH:mm:ss.SSSSSS Z Z"
+}
+```
+
+Постусловие:
+- отправить DELETE {{baseUrl}}/{{api2}}/item/{UUID-объявления}
+ 
+<ins>**ID: TAS-008**</ins> 
+
+Название: Создание объявления позитивное c ненулевым contacts
+
+Предусловие: нет
+
+Шаги:
+- отправить POST {{baseUrl}}/{{api1}}/item c телом
+```
+{
+  "sellerID": 123443,
+  "name": "Т001",
+  "price": 15000,
+  "statistics":
+    {
+      "likes": 0,
+      "viewCount": 0,
+      "contacts": 12
+    }
+}
+```
+
+Ожидаемый результат:
+- status Code 200
+- тело ответа:
+```
+{
+  "id": "UUID-объявления",
+  "sellerID": 123443,
+  "name": "Т001",
+  "price": 15000,
+  "statistics":
+    {
+      "likes": 0,
+      "viewCount": 0,
+      "contacts": 12
+    },
+  "createdAt": "yyyy-MM-dd HH:mm:ss.SSSSSS Z Z"
+}
+```
+
+Постусловие:
+- отправить DELETE {{baseUrl}}/{{api2}}/item/{UUID-объявления}
+
+
+
+ 
 ### Создание объявления негативные
-<ins>**ID: TAS-004**</ins>
+<ins>**ID: TAS-016**</ins>
 
 Название: Создание объявления с некорректными sellerId
 
@@ -225,8 +459,9 @@ _________
     "status": "400"
 }
 ```
+ 
 
-<ins>**ID: TAS-005**</ins>
+<ins>**ID: TAS-017**</ins>
 
 Название: Создание объявления с невалидным sellerId
 
@@ -293,7 +528,8 @@ _________
 
 Постусловие: нет
 
-<ins>**ID: TAS-006**</ins> 
+ 
+<ins>**ID: TAS-018**</ins> 
 
 Название: Создание объявления негативное с пустым name
 
@@ -330,7 +566,43 @@ _________
 }
 ```
 
-<ins>**ID: TAS-007**</ins> 
+<ins>**ID: TAS-019**</ins> 
+
+Название: Создание объявления негативное с числом в name
+
+Предусловие: нет
+
+Шаги:
+- отправить POST {{baseUrl}}/{{api1}}/item c телом
+```
+{
+  "sellerID": 123443,
+  "name": 123443,
+  "price": 15000,
+  "statistics":
+    {
+      "likes": 0,
+      "viewCount": 0,
+      "contacts": 0
+    }
+}
+```
+
+Ожидаемый результат:
+- status Code 400
+- тело ответа:
+```
+{
+    "result": {
+        "message": "поле name обязательно",
+        "messages": {}
+    },
+    "status": "400"
+}
+```
+
+ 
+<ins>**ID: TAS-020**</ins> 
 
 Название: Создание объявления негативное с отрицательным price
 
@@ -364,7 +636,8 @@ _________
     "status": "400"
 }
 ```
-<ins>**ID: TAS-007**</ins> 
+ 
+<ins>**ID: TAS-021**</ins> 
 
 Название: Создание объявления негативное с нулевым price
 
@@ -393,6 +666,454 @@ _________
 {
     "result": {
         "message": "поле price обязательно",
+        "messages": {}
+    },
+    "status": "400"
+}
+```
+Постусловие: нет
+ 
+<ins>**ID: TAS-022**</ins> 
+
+Название: Создание объявления с невалидным телом 
+
+Предусловие: нет
+
+Шаги:
+- отправить POST {{baseUrl}}/{{api1}}/item c телом
+```
+{
+  "sellerID": 123443,
+  "name": "TOS",
+  "price": 0
+}
+```
+- отправить POST {{baseUrl}}/{{api1}}/item c телом
+```
+{
+  "sd": 123443,
+  "23de": "234",
+  "23dd": 1234
+}```
+
+Ожидаемый результат:
+- status Code 400
+- тело ответа:
+```
+{
+    "result": {
+        "message": "<сообщение с требованием обязательных полей>",
+        "messages": {}
+    },
+    "status": "400"
+}
+```
+
+Постусловие: нет
+
+ 
+ 
+### Удаление объявления позитивные
+<ins>**ID: TAS-010**</ins>
+
+Название: Удаление объявления позитивное
+
+Предусловие: 
+- создать объявление с помощью 
+POST {{baseUrl}}/{{api1}}/item c телом
+```
+{
+  "sellerID": 111111,
+  "name": "Т001",
+  "price": 15000,
+  "statistics":
+    {
+      "likes": 2,
+      "viewCount": 3,
+      "contacts": 1
+    }
+}
+```
+- сохранить полученный UUID из ответа
+
+Шаги:
+- отправить DELETE {{baseUrl}}/{{api2}}/item/{сохраненный UUID-объявления}
+- отправить GET {{baseUrl}}/{{api2}}/statistic/{сохраненный UUID-объявления}
+- отправить GET {{baseUrl}}/{{api1}}/{id-продавца}
+
+Ожидаемый результат:
+- на DELETE запрос: status Code 200
+- на GET запрос статистики: status Code 200, тело []
+- на GET запрос объявлений продавца: status Code 200, в теле ответа не должно быть объектов с сохраненным UUID
+Постусловие: нет
+ 
+### Удаление объявления негативные
+
+<ins>**ID: TAS-014**</ins>
+
+Название: Удаление объявления повторное
+
+Предусловие: 
+- создать объявление с помощью 
+POST {{baseUrl}}/{{api1}}/item c телом
+```
+{
+  "sellerID": 111111,
+  "name": "Т001",
+  "price": 15000,
+  "statistics":
+    {
+      "likes": 2,
+      "viewCount": 3,
+      "contacts": 1
+    }
+}
+```
+- сохранить полученный UUID из ответа
+
+Шаги:
+- отправить DELETE {{baseUrl}}/{{api2}}/item/{сохраненный UUID-объявления}
+- еще раз отправить DELETE {{baseUrl}}/{{api2}}/item/{сохраненный UUID-объявления}
+
+Ожидаемый результат:
+- status Code 404
+{
+    "result": {
+        "message": "<сообщение о ненайденном объявлении>",
+        "messages": {}
+    },
+    "status": "404"
+}
+Постусловие: нет
+ 
+<ins>**ID: TAS-015**</ins>
+
+Название: Удаление объявления с невалидным UUID
+
+Предусловие: нет
+Шаги:
+- отправить DELETE {{baseUrl}}/{{api2}}/item/dfdf 
+Ожидаемый результат:
+- status Code 400
+{
+    "result": {
+        "message": "передан некорректный идентификатор объявления",
+        "messages": null
+    },
+    "status": "400"
+}
+ Постусловие: нет
+ 
+### Получение объявлений продавца позитивные
+
+<ins>**ID: TAS-011**</ins>
+
+Название: Получение пустого списка объявлений продавца позитивное
+
+Предусловие: 
+- найти id продавца, у которого нет объявлений
+
+Шаги:
+- отправить GET {{baseUrl}}/{{api1}}/{id-продавца}
+
+Ожидаемый результат:
+- status Code 200
+- тело ответа:
+```
+[]
+```
+ 
+<ins>**ID: TAS-012**</ins>
+
+Название: Получение списка объявлений продавца позитивное
+
+Предусловие: 
+- найти id продавца, у которого нет объявлений
+- отправить POST {{baseUrl}}/{{api1}}/item c телом
+```
+{
+  "sellerID": {id-продавца},
+  "name": "Т001",
+  "price": 15000,
+  "statistics":
+    {
+      "likes": 2,
+      "viewCount": 3,
+      "contacts": 1
+    }
+}
+```
+- отправить POST {{baseUrl}}/{{api1}}/item c телом
+```
+{
+  "sellerID": {id-продавца},
+  "name": "Т002",
+  "price": 17000,
+  "statistics":
+    {
+      "likes":23,
+      "viewCount": 32,
+      "contacts": 9
+    }
+}
+```
+
+
+Шаги:
+- отправить GET {{baseUrl}}/{{api1}}/{id-продавца}
+
+Ожидаемый результат:
+- status Code 200
+- тело ответа:
+```
+[
+{
+"createdAt": "YYYY-MM-DD hh:mm:ss.SSSSSS Z Z",
+        "id": {UUID-объявления1},
+  "sellerID": {id-продавца},
+  "name": "Т001",
+  "price": 15000,
+  "statistics":
+    {
+      "likes": 2,
+      "viewCount": 3,
+      "contacts": 1
+    }
+},
+{
+"createdAt": "YYYY-MM-DD hh:mm:ss.SSSSSS Z Z",
+        "id": {UUID-объявления2},
+  "sellerID": {id-продавца},
+  "name": "Т002",
+  "price": 17000,
+  "statistics":
+    {
+      "likes":23,
+      "viewCount": 32,
+      "contacts": 9
+    }
+}
+]
+```
+Постуловие:
+- отправить DELETE {{baseUrl}}/{{api2}}/item/{UUID-объявления1}
+- отправить DELETE {{baseUrl}}/{{api2}}/item/{UUID-объявления2}
+
+
+ 
+### Получение объявлений продавца негативные
+
+<ins>**ID: TAS-013**</ins>
+
+Название: Получение списка объявлений продавца со строковым id
+
+Предусловие: нет
+Шаги:
+- отправить GET {{baseUrl}}/{{api1}}/string
+
+Ожидаемый результат:
+- status Code 400
+- тело ответа:
+```
+{
+    "result": {
+        "message": "передан некорректный идентификатор продавца",
+        "messages": {}
+    },
+    "status": "400"
+}
+```
+ 
+
+ 
+
+### Получение статистики позитивные
+<ins>**ID: TAS-009**</ins>
+
+Название: Получение статистики объявления позитивное
+
+Предусловие: 
+- создать объявление с помощью 
+POST {{baseUrl}}/{{api1}}/item c телом
+```
+{
+  "sellerID": 111111,
+  "name": "Т001",
+  "price": 15000,
+  "statistics":
+    {
+      "likes": 2,
+      "viewCount": 3,
+      "contacts": 1
+    }
+}
+```
+- сохранить полученный UUID из ответа
+
+Шаги:
+- отправить GET {{baseUrl}}/{{api2}}/statistic/{сохраненный UUID-объявления}
+
+Ожидаемый результат:
+- status Code 200
+- тело ответа:
+```
+{
+    "likes": 2,
+    "viewCount": 3,
+    "contacts": 1
+  } 
+```
+Постусловие:
+- отправить DELETE {{baseUrl}}/{{api2}}/item/{сохраненный UUID-объявления}
+
+
+ 
+### Получение статистики объявлений негативные
+<ins>**ID: TAS-024**</ins>
+
+Название: Получение статистики объявления негативное
+
+Предусловие: 
+- отправить GET {{baseUrl}}/{{api2}}/item/94e084fc-9039-4eab-aa2e-bd1fc0b2d6c6
+
+Шаги:
+- отправить GET {{baseUrl}}/{{api2}}/statistic/94e084fc-9039-4eab-aa2e-bd1fc0b2d6c6
+
+Ожидаемый результат:
+- status Code 404
+- тело ответа:
+```
+{
+    "result": {
+        "message": "статистика по 94e084fc-9039-4eab-aa2e-bd1fc0b2d6c6 не найдена",
+        "messages": null
+    },
+    "status": "404"
+}```
+Постусловие: нет
+ 
+<ins>**ID: TAS-025**</ins>
+
+Название: Получение статистики объявления по невалидному id
+
+Предусловие: нет
+
+Шаги:
+- отправить GET {{baseUrl}}/{{api2}}/statistic/asas-3434
+
+Ожидаемый результат:
+- status Code 404
+- тело ответа:
+```
+{
+    "result": {
+        "message": "передан некорректный идентификатор объявления",
+        "messages": null
+    },
+    "status": "400"
+}```
+Постусловие: нет
+ 
+### Создание объявления корнер-кейсы
+<ins>**ID: TAS-023**</ins> 
+
+Название: Создание объявления с большими значениями 
+
+Предусловие: нет
+
+Шаги:
+- отправить POST {{baseUrl}}/{{api1}}/item c телом
+```
+{
+  "sellerID": 123443123441234431234433,
+  "name": "TOS",
+  "price": 123,
+  "statistics":
+    {
+      "likes": 123,
+      "viewCount": 123,
+      "contacts": 123
+    }
+}
+```
+- отправить POST {{baseUrl}}/{{api1}}/item c телом
+```
+{
+  "sellerID": 1234432,
+  "name":  Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo. Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt. Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit, sed quia non numquam eius modi tempora incidunt ut labore et dolore magnam aliquam quaerat voluptatem. Ut enim ad minima veniam, quis nostrum exercitationem ullam corporis suscipit laboriosam, nisi ut aliquid ex ea commodi consequatur? Quis autem vel eum iure reprehenderit qui in ea voluptate velit esse quam nihil molestiae consequatur, vel illum qui dolorem eum fugiat quo voluptas nulla pariatur?  Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo. Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt. Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit, sed quia non numquam eius modi tempora incidunt ut labore et dolore magnam aliquam quaerat voluptatem. Ut enim ad minima veniam, quis nostrum exercitationem ullam corporis suscipit laboriosam, nisi ut aliquid ex ea commodi consequatur? Quis autem vel eum iure reprehenderit qui in ea voluptate velit esse quam nihil molestiae consequatur, vel illum qui dolorem eum fugiat quo voluptas nulla pariatur?",
+  "price": 123,
+  "statistics":
+    {
+      "likes": 123,
+      "viewCount": 123,
+      "contacts": 123
+    }
+}
+```
+- отправить POST {{baseUrl}}/{{api1}}/item c телом
+```
+{
+  "sellerID": 123443,
+  "name": "TOS",
+  "price":  10223372036854775807,
+  "statistics":
+    {
+      "likes": 123,
+      "viewCount": 123,
+      "contacts": 123
+    }
+}
+```
+- отправить POST {{baseUrl}}/{{api1}}/item c телом
+```
+{
+  "sellerID": 123443,
+  "name": "TOS",
+  "price":  434343,
+  "statistics":
+    {
+      "likes": 10223372036854775807,
+      "viewCount": 123,
+      "contacts": 123
+    }
+}
+```
+- отправить POST {{baseUrl}}/{{api1}}/item c телом
+```
+{
+  "sellerID": 123443,
+  "name": "TOS",
+  "price":  434343,
+  "statistics":
+    {
+      "likes": 123,
+      "viewCount": 10223372036854775807,
+      "contacts": 123
+    }
+}
+```
+- отправить POST {{baseUrl}}/{{api1}}/item c телом
+```
+{
+  "sellerID": 123443,
+  "name": "TOS",
+  "price":  434343,
+  "statistics":
+    {
+      "likes": 123,
+      "viewCount": 123,
+      "contacts": 10223372036854775807
+    }
+}
+```
+
+Ожидаемый результат:
+- status Code 400
+- тело ответа:
+```
+{
+    "result": {
+        "message": "<сообщение о превышении длины значений>",
         "messages": {}
     },
     "status": "400"
