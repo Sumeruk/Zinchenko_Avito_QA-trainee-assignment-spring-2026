@@ -20,6 +20,8 @@ _________
  
 ### Создание объявления позитивные
 
+[Наверх](https://github.com/Sumeruk/Zinchenko_Avito_QA-trainee-assignment-spring-2026/blob/main/docs/TESTCASES.md#%D1%82%D0%B5%D1%81%D1%82-%D0%BA%D0%B5%D0%B9%D1%81%D1%8B)
+
 <ins>**ID: TAS-001**</ins>
 
 Название: Создание объявления позитивное
@@ -62,7 +64,6 @@ _________
 
 Постусловие:
 - отправить DELETE {{baseUrl}}/{{api2}}/item/{UUID-объявления}
-
   
 <ins>**ID: TAS-002**</ins>
 
@@ -383,6 +384,9 @@ _________
 
  
 ### Создание объявления негативные
+
+[Наверх](https://github.com/Sumeruk/Zinchenko_Avito_QA-trainee-assignment-spring-2026/blob/main/docs/TESTCASES.md#%D1%82%D0%B5%D1%81%D1%82-%D0%BA%D0%B5%D0%B9%D1%81%D1%8B)
+
 <ins>**ID: TAS-016**</ins>
 
 Название: Создание объявления с некорректными sellerId
@@ -715,6 +719,9 @@ _________
 Постусловие: нет
 
 ### Удаление объявления позитивные
+
+[Наверх](https://github.com/Sumeruk/Zinchenko_Avito_QA-trainee-assignment-spring-2026/blob/main/docs/TESTCASES.md#%D1%82%D0%B5%D1%81%D1%82-%D0%BA%D0%B5%D0%B9%D1%81%D1%8B)
+
 <ins>**ID: TAS-010**</ins>
 
 Название: Удаление объявления позитивное
@@ -752,6 +759,8 @@ POST {{baseUrl}}/{{api1}}/item c телом
 Постусловие: нет
  
 ### Удаление объявления негативные
+
+[Наверх](https://github.com/Sumeruk/Zinchenko_Avito_QA-trainee-assignment-spring-2026/blob/main/docs/TESTCASES.md#%D1%82%D0%B5%D1%81%D1%82-%D0%BA%D0%B5%D0%B9%D1%81%D1%8B)
 
 <ins>**ID: TAS-014**</ins>
 
@@ -816,6 +825,8 @@ POST {{baseUrl}}/{{api1}}/item c телом
 Постусловие: нет
  
 ### Получение объявлений продавца позитивные
+
+[Наверх](https://github.com/Sumeruk/Zinchenko_Avito_QA-trainee-assignment-spring-2026/blob/main/docs/TESTCASES.md#%D1%82%D0%B5%D1%81%D1%82-%D0%BA%D0%B5%D0%B9%D1%81%D1%8B)
 
 <ins>**ID: TAS-011**</ins>
 
@@ -912,6 +923,8 @@ POST {{baseUrl}}/{{api1}}/item c телом
 
 ### Получение объявлений продавца негативные
 
+[Наверх](https://github.com/Sumeruk/Zinchenko_Avito_QA-trainee-assignment-spring-2026/blob/main/docs/TESTCASES.md#%D1%82%D0%B5%D1%81%D1%82-%D0%BA%D0%B5%D0%B9%D1%81%D1%8B)
+
 <ins>**ID: TAS-013**</ins>
 
 Название: Получение списка объявлений продавца со строковым id
@@ -934,6 +947,9 @@ POST {{baseUrl}}/{{api1}}/item c телом
 ```
 
 ### Получение статистики объявлений позитивные
+
+[Наверх](https://github.com/Sumeruk/Zinchenko_Avito_QA-trainee-assignment-spring-2026/blob/main/docs/TESTCASES.md#%D1%82%D0%B5%D1%81%D1%82-%D0%BA%D0%B5%D0%B9%D1%81%D1%8B)
+
 <ins>**ID: TAS-009**</ins>
 
 Название: Получение статистики объявления позитивное
@@ -973,6 +989,9 @@ POST {{baseUrl}}/{{api1}}/item c телом
 - отправить DELETE {{baseUrl}}/{{api2}}/item/{сохраненный UUID-объявления}
 
 ### Получение статистики объявлений негативные
+
+[Наверх](https://github.com/Sumeruk/Zinchenko_Avito_QA-trainee-assignment-spring-2026/blob/main/docs/TESTCASES.md#%D1%82%D0%B5%D1%81%D1%82-%D0%BA%D0%B5%D0%B9%D1%81%D1%8B)
+
 <ins>**ID: TAS-024**</ins>
 
 Название: Получение статистики объявления негативное
@@ -1019,6 +1038,9 @@ POST {{baseUrl}}/{{api1}}/item c телом
 Постусловие: нет
  
 ### Создание объявления корнер-кейсы
+
+[Наверх](https://github.com/Sumeruk/Zinchenko_Avito_QA-trainee-assignment-spring-2026/blob/main/docs/TESTCASES.md#%D1%82%D0%B5%D1%81%D1%82-%D0%BA%D0%B5%D0%B9%D1%81%D1%8B)
+
 <ins>**ID: TAS-023**</ins> 
 
 Название: Создание объявления с большими значениями 
