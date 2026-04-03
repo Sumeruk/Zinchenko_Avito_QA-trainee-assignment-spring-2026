@@ -1012,7 +1012,9 @@ POST {{baseUrl}}/{{api1}}/item c телом
         "messages": null
     },
     "status": "404"
-}```
+}
+```
+
 Постусловие: нет
  
 <ins>**ID: TAS-025**</ins>
