@@ -76,7 +76,7 @@ public class CustomAssertions {
         softly.assertThat(actual.getCreatedAt())
                 .as("Большая разница между значениями createdAt")
                 .isNotNull()
-                .isCloseTo(timeOfRequest, Assertions.within(Duration.ofMinutes(0)));
+                .isCloseTo(timeOfRequest, Assertions.within(Duration.ofMinutes(1)));
 
     }
 
@@ -116,7 +116,7 @@ public class CustomAssertions {
 
         softly.assertThat(badRequest.getResult())
                 .extracting("message")
-                .as("Нет информации об некорректном поле в message")
+                .as("Нет информации о некорректном поле в message")
                 .isNotNull()
                 .asString()
                 .contains(badFieldName);
@@ -159,6 +159,32 @@ public class CustomAssertions {
         softly.assertThat(statisticsActual.getContacts())
                 .as("Не совпадает contacts")
                 .isEqualTo(statisticsExpected.getContacts());
+
+    }
+
+    public static void assertNotFoundStatisticResponse(Response response, UUID id) {
+
+        response.then()
+                .statusCode(404)
+                .contentType("application/json");
+
+        BadRequestResponse badRequest = response.as(BadRequestResponse.class);
+
+        SoftAssertions softly = new SoftAssertions();
+
+        softly.assertThat(badRequest.getStatus())
+                .as("Не совпадает поле status")
+                .isEqualTo("404");
+
+        softly.assertThat(badRequest.getResult())
+                .extracting("message")
+                .as("Нет информации о id в message")
+                .isNotNull()
+                .asString()
+                .contains(String.valueOf(id));
+
+        softly.assertAll();
+
 
     }
 

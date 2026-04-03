@@ -2,6 +2,7 @@ package utils.testData;
 
 import com.github.javafaker.Faker;
 
+import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
 import model.NewItem;
 import model.Statistics;
@@ -17,9 +18,8 @@ public class TestDataFactory {
     /**
      * Генерирует уникальный sellerId в заданном диапазоне
      */
-    public static Long generateUniqueSellerId() {
-        return
-                ThreadLocalRandom.current().nextLong(SELLER_ID_MIN, SELLER_ID_MAX + 1);
+    public static UUID generateUniqueItemId() {
+        return UUID.randomUUID();
     }
 
     /**

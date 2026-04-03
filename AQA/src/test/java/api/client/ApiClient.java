@@ -60,7 +60,7 @@ public class ApiClient {
                 .delete(Config.getV2Path() + "/item/{id}");
     }
 
-    public Response getStatisticV2(String id) {
+    public Response getStatisticV2(UUID id) {
         return spec.pathParam("id", id)
                 .when()
                 .get(Config.getV2Path() + "/statistic/{id}");

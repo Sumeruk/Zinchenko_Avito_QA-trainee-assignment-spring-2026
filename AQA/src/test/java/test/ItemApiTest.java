@@ -1,5 +1,6 @@
 package test;
 
+import io.restassured.RestAssured;
 import test.assertions.CustomAssertions;
 import io.qameta.allure.Description;
 import io.restassured.response.Response;

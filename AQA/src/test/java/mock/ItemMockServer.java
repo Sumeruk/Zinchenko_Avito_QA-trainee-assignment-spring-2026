@@ -23,7 +23,7 @@ public class ItemMockServer {
         this.port = port;
         this.server = HttpServer.create(new InetSocketAddress(port), 0);
 
-        server.createContext("/api/1/item", new ItemHandler());
+        server.createContext("/", new ItemHandler());
         server.setExecutor(null); // Использует дефолтный executor
     }
 
@@ -40,6 +40,27 @@ public class ItemMockServer {
     class ItemHandler implements HttpHandler {
         @Override
         public void handle(HttpExchange exchange) throws IOException {
+
+            if ("GET".equals(exchange.getRequestMethod())) {
+                String path = exchange.getRequestURI().getPath();
+                // Берём последнюю часть пути как ID (после последнего '/')
+                String id = path.substring(path.lastIndexOf('/') + 1);
+
+                // Формируем ответ ТОЧНО по вашей схеме
+                String response = String.format(
+                        "{\"result\":{\"message\":\"statistic %s not found\",\"messages\":{}},\"status\":\"404\"}",
+                        id
+                );
+
+                exchange.getResponseHeaders().set("Content-Type", "application/json");
+                exchange.sendResponseHeaders(404, response.length());
+
+                try (OutputStream os = exchange.getResponseBody()) {
+                    os.write(response.getBytes());
+                }
+                return; // ❗ Важно: выходим, чтобы не выполнять код ниже
+            }
+
             if (!"POST".equals(exchange.getRequestMethod())) {
                 exchange.sendResponseHeaders(405, -1);
                 return;
@@ -52,26 +73,26 @@ public class ItemMockServer {
 
 
             if (jsonNode.isObject()) {
-//                jsonNode.fields().forEachRemaining(entry ->
-//                        responseNode.set(entry.getKey(), entry.getValue())
-//                );
+                jsonNode.fields().forEachRemaining(entry ->
+                        responseNode.set(entry.getKey(), entry.getValue())
+                );
 
                 // МОК С ОШИБКОЙ
-                jsonNode.fields().forEachRemaining(entry -> {
-                    String key = entry.getKey();
-                    JsonNode value = entry.getValue();
-
-                    // Эмуляция ошибки: добавляем 1 к числовым полям
-                    if (value.isLong() || value.isInt()) {
-                        long modifiedValue = value.asLong() + 1;
-                        responseNode.put(key, modifiedValue);
-                    } else if (value.isTextual()) {
-                        // Для строк добавляем "1" в конец
-                        responseNode.put(key, value.asText() + "1");
-                    } else {
-                        responseNode.set(key, value);
-                    }
-                });
+//                jsonNode.fields().forEachRemaining(entry -> {
+//                    String key = entry.getKey();
+//                    JsonNode value = entry.getValue();
+//
+//                    // Эмуляция ошибки: добавляем 1 к числовым полям
+//                    if (value.isLong() || value.isInt()) {
+//                        long modifiedValue = value.asLong() + 1;
+//                        responseNode.put(key, modifiedValue);
+//                    } else if (value.isTextual()) {
+//                        // Для строк добавляем "1" в конец
+//                        responseNode.put(key, value.asText() + "1");
+//                    } else {
+//                        responseNode.set(key, value);
+//                    }
+//                });
             }
 
             responseNode.put("id", UUID.randomUUID().toString());
