@@ -3,7 +3,7 @@ package model;
 import com.github.javafaker.Faker;
 
 import java.util.concurrent.ThreadLocalRandom;
-import model.customModels.CustomItem;
+import model.customModels.CustomNewItem;
 import model.customModels.CustomStatistics;
 
 public class TestDataFactory {
@@ -23,8 +23,8 @@ public class TestDataFactory {
     /**
      * Генерирует валидный Item для позитивных тестов
      */
-    public static Item createValidItem() {
-        return Item.builder()
+    public static NewItem createValidItem() {
+        return NewItem.builder()
                 .sellerId(faker.number().randomNumber())
                 .name(faker.commerce().productName())
                 .price(faker.number().randomNumber())
@@ -39,8 +39,8 @@ public class TestDataFactory {
     /**
      * Генерирует Item с минимально допустимыми значениями
      */
-    public static Item createItemWithMinValues() {
-        return Item.builder()
+    public static NewItem createItemWithMinValues() {
+        return NewItem.builder()
                 .sellerId(SELLER_ID_MIN)
                 .name("A")
                 .price(-1L)
@@ -55,8 +55,8 @@ public class TestDataFactory {
     /**
      * Генерирует Item с максимальными значениями (boundary testing)
      */
-    public static Item createItemWithMaxValues() {
-        return Item.builder()
+    public static NewItem createItemWithMaxValues() {
+        return NewItem.builder()
                 .sellerId(SELLER_ID_MAX)
                 .name(faker.lorem().characters(255))
                 .price(Long.MAX_VALUE)
@@ -68,26 +68,26 @@ public class TestDataFactory {
                 .build();
     }
 
-    public static CustomItem createItemWithCustomValue(InvalidField field, Object value) {
+    public static CustomNewItem createItemWithCustomValue(InvalidField field, Object value) {
 
-        CustomItem customItem = createCustomItem();
+        CustomNewItem customNewItem = createCustomItem();
 
         switch (field) {
 
-            case SELLER_ID -> customItem.setSellerId(value);
-            case NAME -> customItem.setName(value);
-            case PRICE -> customItem.setPrice(value);
-            case STATISTICS_LIKES -> customItem.getStatistics().setLikes(value);
-            case STATISTICS_VIEW_COUNT -> customItem.getStatistics().setViewCount(value);
-            case STATISTICS_CONTACTS -> customItem.getStatistics().setContacts(value);
+            case SELLER_ID -> customNewItem.setSellerId(value);
+            case NAME -> customNewItem.setName(value);
+            case PRICE -> customNewItem.setPrice(value);
+            case STATISTICS_LIKES -> customNewItem.getStatistics().setLikes(value);
+            case STATISTICS_VIEW_COUNT -> customNewItem.getStatistics().setViewCount(value);
+            case STATISTICS_CONTACTS -> customNewItem.getStatistics().setContacts(value);
         }
 
-        return customItem;
+        return customNewItem;
     }
 
-    private static CustomItem createCustomItem() {
+    private static CustomNewItem createCustomItem() {
 
-        CustomItem.CustomItemBuilder builder = CustomItem.builder()
+        CustomNewItem.CustomNewItemBuilder builder = CustomNewItem.builder()
                 .sellerId(faker.number().randomNumber())
                 .name(faker.commerce().productName())
                 .price(faker.number().randomNumber())
@@ -101,7 +101,21 @@ public class TestDataFactory {
     }
 
     public enum InvalidField {
-        SELLER_ID, NAME, PRICE, STATISTICS_LIKES,
-        STATISTICS_VIEW_COUNT, STATISTICS_CONTACTS
+        SELLER_ID("sellerId"),
+        NAME("name"),
+        PRICE("price"),
+        STATISTICS_LIKES("likes"),
+        STATISTICS_VIEW_COUNT("viewCount"),
+        STATISTICS_CONTACTS("contacts");
+
+        private final String fieldName;
+
+        InvalidField(String fieldName) {
+            this.fieldName = fieldName;
+        }
+
+        public String getFieldName() {
+            return fieldName;
+        }
     }
 }

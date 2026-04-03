@@ -1,8 +1,8 @@
 package api;
 
 import config.BaseTest;
+import config.CustomAssertions;
 import io.qameta.allure.Description;
-import io.qameta.allure.Link;
 import io.restassured.RestAssured;
 import io.restassured.response.Response;
 import java.io.IOException;
@@ -10,18 +10,17 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Stream;
+import javax.mail.FetchProfile;
 import mock.ItemMockServer;
-import model.Item;
+import model.NewItem;
 import model.TestDataFactory;
-import model.customModels.CustomItem;
-import model.responses.CreateSuccessResponse;
+import model.customModels.CustomNewItem;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
-import org.junit.jupiter.params.provider.ValueSource;
 
 import static config.CustomAssertions.*;
 import static io.restassured.module.jsv.JsonSchemaValidator.matchesJsonSchemaInClasspath;
@@ -42,14 +41,14 @@ public class ItemApiTest extends BaseTest {
         markPositive();
 
         // МОКИ
-        mockServer = new ItemMockServer(PORT);
-        mockServer.start();
-        RestAssured.baseURI = "http://localhost";
-        RestAssured.port = PORT;
+//        mockServer = new ItemMockServer(PORT);
+//        mockServer.start();
+//        RestAssured.baseURI = "http://localhost";
+//        RestAssured.port = PORT;
 
-        Item item = TestDataFactory.createValidItem();
+        NewItem newItem = TestDataFactory.createValidItem();
 
-        Response response = apiClient.createItem(item);
+        Response response = apiClient.createItem(newItem);
 
         String responseBody = response.getBody().asString();
 
@@ -60,10 +59,10 @@ public class ItemApiTest extends BaseTest {
         );
 
         createdIds.add(UUID.fromString(response.jsonPath().getString("id")));
-        assertItemResponse(response, item);
+        assertItemResponse(response, newItem);
 
         // МОКИ
-        mockServer.stop();
+//        mockServer.stop();
 
     }
 
@@ -74,20 +73,20 @@ public class ItemApiTest extends BaseTest {
         markPositive();
 
         // МОКИ
-        mockServer = new ItemMockServer(PORT);
-        mockServer.start();
-        RestAssured.baseURI = "http://localhost";
-        RestAssured.port = PORT;
+//        mockServer = new ItemMockServer(PORT);
+//        mockServer.start();
+//        RestAssured.baseURI = "http://localhost";
+//        RestAssured.port = PORT;
 
-        Item item = TestDataFactory.createValidItem();
+        NewItem newItem = TestDataFactory.createValidItem();
 
         List<Response> responses = new ArrayList<>();
 
         for (int i = 0; i < 3; i++) {
-            responses.add(apiClient.createItem(item));
+            responses.add(apiClient.createItem(newItem));
         }
 
-        for (Response response: responses){
+        for (Response response : responses) {
             String responseBody = response.getBody().asString();
 
             assertThat(
@@ -99,7 +98,7 @@ public class ItemApiTest extends BaseTest {
             createdIds.add(UUID.fromString(response.jsonPath().getString("id")));
         }
 
-        assertItemResponsesList(responses, item);
+        assertItemResponsesList(responses, newItem);
 
         // МОКИ
 //        mockServer.stop();
@@ -111,12 +110,45 @@ public class ItemApiTest extends BaseTest {
     public void deleteCreatedItem() throws IOException {
 
         createdIds.stream()
-                        .map(uuid -> apiClient.deleteItem(uuid));
+                .map(uuid -> apiClient.deleteItem(uuid));
 
         createdIds.clear();
     }
 
-    static Stream<Arguments> invalidSellerIdProvider() {
+    @DisplayName("TAS-016: Создание объявления с некорректными sellerId")
+    @ParameterizedTest(name = "={0}")
+    @MethodSource("uncorrectedSellerIdProvider")
+    @Description("Проверка валидации формата sellerId")
+    void createItemUncorrectedSellerId(Object uncorrectedSellerId) throws IOException {
+        markNegative();
+
+        //МОКИ
+//        mockServer = new ItemMockServer(PORT);
+//        mockServer.start();
+//        RestAssured.baseURI = "http://localhost";
+//        RestAssured.port = PORT;
+
+        CustomNewItem item = TestDataFactory.createItemWithCustomValue(
+                TestDataFactory.InvalidField.SELLER_ID,
+                uncorrectedSellerId
+        );
+
+        Response response = apiClient.createCustomItem(item);
+
+        String responseBody = response.asString();
+        assertThat(
+                "Несоответствие схемы ответа сервера",
+                responseBody,
+                matchesJsonSchemaInClasspath("bad-request-schema.json")
+        );
+
+        CustomAssertions.assertBadRequestResponse(response, TestDataFactory.InvalidField.SELLER_ID.getFieldName());
+
+        //МОКИ
+        mockServer.stop();
+    }
+
+    static Stream<Arguments> uncorrectedSellerIdProvider() {
         return Stream.of(
                 Arguments.of(11111.3),
                 Arguments.of("abc"),
@@ -125,28 +157,57 @@ public class ItemApiTest extends BaseTest {
         );
     }
 
-    @DisplayName("TAS-016: Создание объявления с некорректными sellerId")
-    @ParameterizedTest(name = "sellerID={0}")
+    @DisplayName("TAS-017: Создание объявления с невалидным sellerId")
+    @ParameterizedTest(name = "={0}")
     @MethodSource("invalidSellerIdProvider")
     @Description("Проверка валидации формата sellerId")
-    void getItemsBySellerId_invalidSellerId_badRequest(Object sellerId) throws IOException {
+    void createItemInvalidSellerId(String invalidSellerId) throws IOException {
         markNegative();
 
         //МОКИ
-        mockServer = new ItemMockServer(PORT);
-        mockServer.start();
-        RestAssured.baseURI = "http://localhost";
-        RestAssured.port = PORT;
+//        mockServer = new ItemMockServer(PORT);
+//        mockServer.start();
+//        RestAssured.baseURI = "http://localhost";
+//        RestAssured.port = PORT;
 
-        CustomItem item = TestDataFactory.createItemWithCustomValue(TestDataFactory.InvalidField.SELLER_ID, sellerId);
+        NewItem newItem = TestDataFactory.createValidItem();
 
-        Response response = apiClient.createItem(item);
+        String newItemInvalidSellerId = String.format("""
+                {
+                  "sellerID": %s,
+                  "name": %s,
+                  "price": %d,
+                  "statistics": { "likes": %d, "viewCount": %d, "contacts": %d }
+                }
+                """,
+                invalidSellerId,
+                newItem.getName(), newItem.getPrice(),
+                newItem.getStatistics().getLikes(),
+                newItem.getStatistics().getViewCount(),
+                newItem.getStatistics().getContacts());
 
-        // API может вернуть 400 или 404 в зависимости от реализации
-//        assertThat(response.statusCode()).isIn(400, 404);
+
+        Response response = apiClient.createItemFromString(newItemInvalidSellerId);
+
+        String responseBody = response.asString();
+        assertThat(
+                "Несоответствие схемы ответа сервера",
+                responseBody,
+                matchesJsonSchemaInClasspath("bad-request-schema.json")
+        );
+
+        CustomAssertions.assertBadRequestResponse(response, TestDataFactory.InvalidField.SELLER_ID.getFieldName());
 
         //МОКИ
         mockServer.stop();
+    }
+
+    static Stream<Arguments> invalidSellerIdProvider() {
+        return Stream.of(
+                Arguments.of("01"),
+                Arguments.of("abc"),
+                Arguments.of("-0")
+        );
     }
 
 //    @DisplayName("POS-002: Получение объявления по существующему ID")

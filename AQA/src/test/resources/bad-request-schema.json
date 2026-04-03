@@ -1,0 +1,20 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "required": ["result", "status"],
+  "properties": {
+    "result": {
+      "type": "object",
+      "required": ["messages", "message"],
+      "properties": {
+        "messages": {
+          "type": "object",
+          "additionalProperties": { "type": "string" }
+        },
+        "message": { "type": "string" }
+      }
+    },
+    "status": { "type": "string" }
+  },
+  "additionalProperties": false
+}

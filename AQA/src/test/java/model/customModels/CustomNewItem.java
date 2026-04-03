@@ -6,7 +6,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import model.Item;
 
 @Data
 @Builder
@@ -14,7 +13,7 @@ import model.Item;
 @AllArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class CustomItem {
+public class CustomNewItem {
 
     private Object sellerId;
     private Object name;

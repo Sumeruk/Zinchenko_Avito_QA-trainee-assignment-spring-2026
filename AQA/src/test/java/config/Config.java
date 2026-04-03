@@ -43,12 +43,12 @@ public class Config {
     }
 
     public static RequestSpecification getDefaultSpec() {
-//        RestAssured.baseURI = getBaseUrl();
-//        RestAssured.port = -1;
+        RestAssured.baseURI = getBaseUrl();
+        RestAssured.port = -1;
 
         // моки
-        RestAssured.baseURI = "http://localhost";
-        RestAssured.port = 8080;
+//        RestAssured.baseURI = "http://localhost";
+//        RestAssured.port = 8080;
 
         System.out.println("DEBUG --- УРЛ " + getBaseUrl());
 

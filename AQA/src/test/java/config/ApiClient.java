@@ -3,8 +3,8 @@ package config;
 import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
 import java.util.UUID;
-import model.Item;
-import model.customModels.CustomItem;
+import model.NewItem;
+import model.customModels.CustomNewItem;
 
 public class ApiClient {
     private final RequestSpecification spec;
@@ -15,13 +15,19 @@ public class ApiClient {
 
     // ========== API v1 ==========
 
-    public Response createItem(Item item) {
+    public Response createItem(NewItem newItem) {
+        return spec.body(newItem)
+                .when()
+                .post(Config.getV1Path() + "/item");
+    }
+
+    public Response createCustomItem(CustomNewItem item) {
         return spec.body(item)
                 .when()
                 .post(Config.getV1Path() + "/item");
     }
 
-    public Response createItem(CustomItem item) {
+    public Response createItemFromString(String item) {
         return spec.body(item)
                 .when()
                 .post(Config.getV1Path() + "/item");

@@ -16,6 +16,6 @@ import lombok.NoArgsConstructor;
 public class BadRequestResponse {
 
     private String status;
-    private ResultResponse responseResponse;
+    private ResultResponse result;
 
 }

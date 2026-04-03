@@ -8,24 +8,21 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.UUID;
 
-import model.Item;
+import model.NewItem;
 import model.Statistics;
+import model.responses.BadRequestResponse;
 import model.responses.CreateSuccessResponse;
 import org.assertj.core.api.Assertions;
 import org.assertj.core.api.SoftAssertions;
-import org.junit.jupiter.api.function.Executable;
-
-import static java.util.stream.Collectors.toList;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
-import static org.assertj.core.api.Assertions.assertThatCode;
 
 
 public class CustomAssertions {
     private static final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSSSSS Z Z");
 
-    public static void assertItemResponse(Response response, Item expected) {
+    public static void assertItemResponse(Response response, NewItem expected) {
 
         SoftAssertions softly = new SoftAssertions();
 
@@ -34,7 +31,7 @@ public class CustomAssertions {
         softly.assertAll();
     }
 
-    private static void assertItemResponse(Response response, Item expected, SoftAssertions softly) {
+    private static void assertItemResponse(Response response, NewItem expected, SoftAssertions softly) {
 
         response.then()
                 .statusCode(200)
@@ -81,7 +78,7 @@ public class CustomAssertions {
 
     }
 
-    public static void assertItemResponsesList(List<Response> responses, Item item) {
+    public static void assertItemResponsesList(List<Response> responses, NewItem newItem) {
 
         List<String> fieldValues = responses.stream()
                 .map(r -> r.jsonPath().get("id"))
@@ -95,10 +92,35 @@ public class CustomAssertions {
         SoftAssertions softly = new SoftAssertions();
 
         for (Response response : responses) {
-            assertItemResponse(response, item, softly);
+            assertItemResponse(response, newItem, softly);
         }
 
         softly.assertAll();
+    }
+
+    public static void assertBadRequestResponse(Response badResponse, String badFieldName) {
+
+        badResponse.then()
+                .statusCode(400)
+                .contentType("application/json");
+
+        BadRequestResponse badRequest = badResponse.as(BadRequestResponse.class);
+
+        SoftAssertions softly = new SoftAssertions();
+
+        softly.assertThat(badRequest.getStatus())
+                .as("Не совпадает поле status")
+                .isEqualTo("400");
+
+        softly.assertThat(badRequest.getResult())
+                .extracting("message")
+                .as("Нет информации об некорректном поле в message")
+                .isNotNull()
+                .asString()
+                .contains(badFieldName);
+
+        softly.assertAll();
+
     }
 
     public static void assertStatisticsResponse(Response response) {
@@ -133,7 +155,7 @@ public class CustomAssertions {
     /**
      * Soft assertions для комплексных проверок
      */
-    public static SoftAssertions softAssertItem(Item actual, Item expected) {
+    public static SoftAssertions softAssertItem(NewItem actual, NewItem expected) {
         SoftAssertions softly = new SoftAssertions();
         softly.assertThat(actual.getName()).isEqualTo(expected.getName());
         softly.assertThat(actual.getPrice()).isEqualTo(expected.getPrice());
