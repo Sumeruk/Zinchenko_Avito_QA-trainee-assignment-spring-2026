@@ -7,20 +7,20 @@ api1: <ins> /api/1 </ins>
 api2: <ins> /api/2 </ins>
 _________
 ### Тест-кейсы:
-- [Создание объявления позитивные](https://github.com/Sumeruk/Zinchenko_Avito_QA-trainee-assignment-spring-2026/blob/main/docs/TESTCASES.md#%D1%81%D0%BE%D0%B7%D0%B4%D0%B0%D0%BD%D0%B8%D0%B5-%D0%BE%D0%B1%D1%8A%D1%8F%D0%B2%D0%BB%D0%B5%D0%BD%D0%B8%D1%8F-%D0%BF%D0%BE%D0%B7%D0%B8%D1%82%D0%B8%D0%B2%D0%BD%D1%8B%D0%B5)
-- [Создание объявления негативные](https://github.com/Sumeruk/Zinchenko_Avito_QA-trainee-assignment-spring-2026/blob/main/docs/TESTCASES.md#%D1%81%D0%BE%D0%B7%D0%B4%D0%B0%D0%BD%D0%B8%D0%B5-%D0%BE%D0%B1%D1%8A%D1%8F%D0%B2%D0%BB%D0%B5%D0%BD%D0%B8%D1%8F-%D0%BD%D0%B5%D0%B3%D0%B0%D1%82%D0%B8%D0%B2%D0%BD%D1%8B%D0%B5)
-- [Удаление объявления позитивные](https://github.com/Sumeruk/Zinchenko_Avito_QA-trainee-assignment-spring-2026/blob/main/docs/TESTCASES.md#%D1%83%D0%B4%D0%B0%D0%BB%D0%B5%D0%BD%D0%B8%D0%B5-%D0%BE%D0%B1%D1%8A%D1%8F%D0%B2%D0%BB%D0%B5%D0%BD%D0%B8%D1%8F-%D0%BF%D0%BE%D0%B7%D0%B8%D1%82%D0%B8%D0%B2%D0%BD%D1%8B%D0%B5)
-- [Удаление объявления негативные](https://github.com/Sumeruk/Zinchenko_Avito_QA-trainee-assignment-spring-2026/blob/main/docs/TESTCASES.md#%D1%83%D0%B4%D0%B0%D0%BB%D0%B5%D0%BD%D0%B8%D0%B5-%D0%BE%D0%B1%D1%8A%D1%8F%D0%B2%D0%BB%D0%B5%D0%BD%D0%B8%D1%8F-%D0%BD%D0%B5%D0%B3%D0%B0%D1%82%D0%B8%D0%B2%D0%BD%D1%8B%D0%B5)
-- [Получение объявлений продавца позитивные](https://github.com/Sumeruk/Zinchenko_Avito_QA-trainee-assignment-spring-2026/blob/main/docs/TESTCASES.md#%D0%BF%D0%BE%D0%BB%D1%83%D1%87%D0%B5%D0%BD%D0%B8%D0%B5-%D0%BE%D0%B1%D1%8A%D1%8F%D0%B2%D0%BB%D0%B5%D0%BD%D0%B8%D0%B9-%D0%BF%D1%80%D0%BE%D0%B4%D0%B0%D0%B2%D1%86%D0%B0-%D0%BF%D0%BE%D0%B7%D0%B8%D1%82%D0%B8%D0%B2%D0%BD%D1%8B%D0%B5)
-- [Получение объявлений продавца негативные](https://github.com/Sumeruk/Zinchenko_Avito_QA-trainee-assignment-spring-2026/blob/main/docs/TESTCASES.md#%D0%BF%D0%BE%D0%BB%D1%83%D1%87%D0%B5%D0%BD%D0%B8%D0%B5-%D0%BE%D0%B1%D1%8A%D1%8F%D0%B2%D0%BB%D0%B5%D0%BD%D0%B8%D0%B9-%D0%BF%D1%80%D0%BE%D0%B4%D0%B0%D0%B2%D1%86%D0%B0-%D0%BD%D0%B5%D0%B3%D0%B0%D1%82%D0%B8%D0%B2%D0%BD%D1%8B%D0%B5)
-- [Получение статистики объявления позитивные](https://github.com/Sumeruk/Zinchenko_Avito_QA-trainee-assignment-spring-2026/blob/main/docs/TESTCASES.md#%D0%BF%D0%BE%D0%BB%D1%83%D1%87%D0%B5%D0%BD%D0%B8%D0%B5-%D1%81%D1%82%D0%B0%D1%82%D0%B8%D1%81%D1%82%D0%B8%D0%BA%D0%B8-%D0%BE%D0%B1%D1%8A%D1%8F%D0%B2%D0%BB%D0%B5%D0%BD%D0%B8%D0%B9-%D0%BF%D0%BE%D0%B7%D0%B8%D1%82%D0%B8%D0%B2%D0%BD%D1%8B%D0%B5)
-- [Получение статистики объявления негативные](https://github.com/Sumeruk/Zinchenko_Avito_QA-trainee-assignment-spring-2026/blob/main/docs/TESTCASES.md#%D0%BF%D0%BE%D0%BB%D1%83%D1%87%D0%B5%D0%BD%D0%B8%D0%B5-%D1%81%D1%82%D0%B0%D1%82%D0%B8%D1%81%D1%82%D0%B8%D0%BA%D0%B8-%D0%BE%D0%B1%D1%8A%D1%8F%D0%B2%D0%BB%D0%B5%D0%BD%D0%B8%D0%B9-%D0%BD%D0%B5%D0%B3%D0%B0%D1%82%D0%B8%D0%B2%D0%BD%D1%8B%D0%B5)
-- [Создание объявления корнер-кейсы](https://github.com/Sumeruk/Zinchenko_Avito_QA-trainee-assignment-spring-2026/blob/main/docs/TESTCASES.md#%D1%81%D0%BE%D0%B7%D0%B4%D0%B0%D0%BD%D0%B8%D0%B5-%D0%BE%D0%B1%D1%8A%D1%8F%D0%B2%D0%BB%D0%B5%D0%BD%D0%B8%D1%8F-%D0%BA%D0%BE%D1%80%D0%BD%D0%B5%D1%80-%D0%BA%D0%B5%D0%B9%D1%81%D1%8B)
+- [Создание объявления позитивные](https://github.com/Sumeruk/Zinchenko_Avito_QA-trainee-assignment-spring-2026/blob/main/TESTCASES.md#%D1%81%D0%BE%D0%B7%D0%B4%D0%B0%D0%BD%D0%B8%D0%B5-%D0%BE%D0%B1%D1%8A%D1%8F%D0%B2%D0%BB%D0%B5%D0%BD%D0%B8%D1%8F-%D0%BF%D0%BE%D0%B7%D0%B8%D1%82%D0%B8%D0%B2%D0%BD%D1%8B%D0%B5)
+- [Создание объявления негативные](https://github.com/Sumeruk/Zinchenko_Avito_QA-trainee-assignment-spring-2026/blob/main/TESTCASES.md#%D1%81%D0%BE%D0%B7%D0%B4%D0%B0%D0%BD%D0%B8%D0%B5-%D0%BE%D0%B1%D1%8A%D1%8F%D0%B2%D0%BB%D0%B5%D0%BD%D0%B8%D1%8F-%D0%BD%D0%B5%D0%B3%D0%B0%D1%82%D0%B8%D0%B2%D0%BD%D1%8B%D0%B5)
+- [Удаление объявления позитивные](https://github.com/Sumeruk/Zinchenko_Avito_QA-trainee-assignment-spring-2026/blob/main/TESTCASES.md#%D1%83%D0%B4%D0%B0%D0%BB%D0%B5%D0%BD%D0%B8%D0%B5-%D0%BE%D0%B1%D1%8A%D1%8F%D0%B2%D0%BB%D0%B5%D0%BD%D0%B8%D1%8F-%D0%BF%D0%BE%D0%B7%D0%B8%D1%82%D0%B8%D0%B2%D0%BD%D1%8B%D0%B5)
+- [Удаление объявления негативные](https://github.com/Sumeruk/Zinchenko_Avito_QA-trainee-assignment-spring-2026/blob/main/TESTCASES.md#%D1%83%D0%B4%D0%B0%D0%BB%D0%B5%D0%BD%D0%B8%D0%B5-%D0%BE%D0%B1%D1%8A%D1%8F%D0%B2%D0%BB%D0%B5%D0%BD%D0%B8%D1%8F-%D0%BD%D0%B5%D0%B3%D0%B0%D1%82%D0%B8%D0%B2%D0%BD%D1%8B%D0%B5)
+- [Получение объявлений продавца позитивные](https://github.com/Sumeruk/Zinchenko_Avito_QA-trainee-assignment-spring-2026/blob/main/TESTCASES.md#%D0%BF%D0%BE%D0%BB%D1%83%D1%87%D0%B5%D0%BD%D0%B8%D0%B5-%D0%BE%D0%B1%D1%8A%D1%8F%D0%B2%D0%BB%D0%B5%D0%BD%D0%B8%D0%B9-%D0%BF%D1%80%D0%BE%D0%B4%D0%B0%D0%B2%D1%86%D0%B0-%D0%BF%D0%BE%D0%B7%D0%B8%D1%82%D0%B8%D0%B2%D0%BD%D1%8B%D0%B5)
+- [Получение объявлений продавца негативные](https://github.com/Sumeruk/Zinchenko_Avito_QA-trainee-assignment-spring-2026/blob/main/TESTCASES.md#%D0%BF%D0%BE%D0%BB%D1%83%D1%87%D0%B5%D0%BD%D0%B8%D0%B5-%D0%BE%D0%B1%D1%8A%D1%8F%D0%B2%D0%BB%D0%B5%D0%BD%D0%B8%D0%B9-%D0%BF%D1%80%D0%BE%D0%B4%D0%B0%D0%B2%D1%86%D0%B0-%D0%BD%D0%B5%D0%B3%D0%B0%D1%82%D0%B8%D0%B2%D0%BD%D1%8B%D0%B5)
+- [Получение статистики объявления позитивные](https://github.com/Sumeruk/Zinchenko_Avito_QA-trainee-assignment-spring-2026/blob/main/TESTCASES.md#%D0%BF%D0%BE%D0%BB%D1%83%D1%87%D0%B5%D0%BD%D0%B8%D0%B5-%D1%81%D1%82%D0%B0%D1%82%D0%B8%D1%81%D1%82%D0%B8%D0%BA%D0%B8-%D0%BE%D0%B1%D1%8A%D1%8F%D0%B2%D0%BB%D0%B5%D0%BD%D0%B8%D0%B9-%D0%BF%D0%BE%D0%B7%D0%B8%D1%82%D0%B8%D0%B2%D0%BD%D1%8B%D0%B5)
+- [Получение статистики объявления негативные](https://github.com/Sumeruk/Zinchenko_Avito_QA-trainee-assignment-spring-2026/blob/main/TESTCASES.md#%D0%BF%D0%BE%D0%BB%D1%83%D1%87%D0%B5%D0%BD%D0%B8%D0%B5-%D1%81%D1%82%D0%B0%D1%82%D0%B8%D1%81%D1%82%D0%B8%D0%BA%D0%B8-%D0%BE%D0%B1%D1%8A%D1%8F%D0%B2%D0%BB%D0%B5%D0%BD%D0%B8%D0%B9-%D0%BD%D0%B5%D0%B3%D0%B0%D1%82%D0%B8%D0%B2%D0%BD%D1%8B%D0%B5)
+- [Создание объявления корнер-кейсы](https://github.com/Sumeruk/Zinchenko_Avito_QA-trainee-assignment-spring-2026/blob/main/TESTCASES.md#%D1%81%D0%BE%D0%B7%D0%B4%D0%B0%D0%BD%D0%B8%D0%B5-%D0%BE%D0%B1%D1%8A%D1%8F%D0%B2%D0%BB%D0%B5%D0%BD%D0%B8%D1%8F-%D0%BA%D0%BE%D1%80%D0%BD%D0%B5%D1%80-%D0%BA%D0%B5%D0%B9%D1%81%D1%8B)
 
  
 ### Создание объявления позитивные
 
-[Наверх](https://github.com/Sumeruk/Zinchenko_Avito_QA-trainee-assignment-spring-2026/blob/main/docs/TESTCASES.md#%D1%82%D0%B5%D1%81%D1%82-%D0%BA%D0%B5%D0%B9%D1%81%D1%8B)
+[Наверх](https://github.com/Sumeruk/Zinchenko_Avito_QA-trainee-assignment-spring-2026/blob/main/TESTCASES.md#%D1%82%D0%B5%D1%81%D1%82-%D0%BA%D0%B5%D0%B9%D1%81%D1%8B)
 
 <ins>**ID: TAS-001**</ins>
 
@@ -385,7 +385,7 @@ _________
  
 ### Создание объявления негативные
 
-[Наверх](https://github.com/Sumeruk/Zinchenko_Avito_QA-trainee-assignment-spring-2026/blob/main/docs/TESTCASES.md#%D1%82%D0%B5%D1%81%D1%82-%D0%BA%D0%B5%D0%B9%D1%81%D1%8B)
+[Наверх](https://github.com/Sumeruk/Zinchenko_Avito_QA-trainee-assignment-spring-2026/blob/main/TESTCASES.md#%D1%82%D0%B5%D1%81%D1%82-%D0%BA%D0%B5%D0%B9%D1%81%D1%8B)
 
 <ins>**ID: TAS-016**</ins>
 
@@ -720,7 +720,7 @@ _________
 
 ### Удаление объявления позитивные
 
-[Наверх](https://github.com/Sumeruk/Zinchenko_Avito_QA-trainee-assignment-spring-2026/blob/main/docs/TESTCASES.md#%D1%82%D0%B5%D1%81%D1%82-%D0%BA%D0%B5%D0%B9%D1%81%D1%8B)
+[Наверх](https://github.com/Sumeruk/Zinchenko_Avito_QA-trainee-assignment-spring-2026/blob/main/TESTCASES.md#%D1%82%D0%B5%D1%81%D1%82-%D0%BA%D0%B5%D0%B9%D1%81%D1%8B)
 
 <ins>**ID: TAS-010**</ins>
 
@@ -760,7 +760,7 @@ POST {{baseUrl}}/{{api1}}/item c телом
  
 ### Удаление объявления негативные
 
-[Наверх](https://github.com/Sumeruk/Zinchenko_Avito_QA-trainee-assignment-spring-2026/blob/main/docs/TESTCASES.md#%D1%82%D0%B5%D1%81%D1%82-%D0%BA%D0%B5%D0%B9%D1%81%D1%8B)
+[Наверх](https://github.com/Sumeruk/Zinchenko_Avito_QA-trainee-assignment-spring-2026/blob/main/TESTCASES.md#%D1%82%D0%B5%D1%81%D1%82-%D0%BA%D0%B5%D0%B9%D1%81%D1%8B)
 
 <ins>**ID: TAS-014**</ins>
 
@@ -826,7 +826,7 @@ POST {{baseUrl}}/{{api1}}/item c телом
  
 ### Получение объявлений продавца позитивные
 
-[Наверх](https://github.com/Sumeruk/Zinchenko_Avito_QA-trainee-assignment-spring-2026/blob/main/docs/TESTCASES.md#%D1%82%D0%B5%D1%81%D1%82-%D0%BA%D0%B5%D0%B9%D1%81%D1%8B)
+[Наверх](https://github.com/Sumeruk/Zinchenko_Avito_QA-trainee-assignment-spring-2026/blob/main/TESTCASES.md#%D1%82%D0%B5%D1%81%D1%82-%D0%BA%D0%B5%D0%B9%D1%81%D1%8B)
 
 <ins>**ID: TAS-011**</ins>
 
@@ -923,7 +923,7 @@ POST {{baseUrl}}/{{api1}}/item c телом
 
 ### Получение объявлений продавца негативные
 
-[Наверх](https://github.com/Sumeruk/Zinchenko_Avito_QA-trainee-assignment-spring-2026/blob/main/docs/TESTCASES.md#%D1%82%D0%B5%D1%81%D1%82-%D0%BA%D0%B5%D0%B9%D1%81%D1%8B)
+[Наверх](https://github.com/Sumeruk/Zinchenko_Avito_QA-trainee-assignment-spring-2026/blob/main/TESTCASES.md#%D1%82%D0%B5%D1%81%D1%82-%D0%BA%D0%B5%D0%B9%D1%81%D1%8B)
 
 <ins>**ID: TAS-013**</ins>
 
@@ -948,7 +948,7 @@ POST {{baseUrl}}/{{api1}}/item c телом
 
 ### Получение статистики объявлений позитивные
 
-[Наверх](https://github.com/Sumeruk/Zinchenko_Avito_QA-trainee-assignment-spring-2026/blob/main/docs/TESTCASES.md#%D1%82%D0%B5%D1%81%D1%82-%D0%BA%D0%B5%D0%B9%D1%81%D1%8B)
+[Наверх](https://github.com/Sumeruk/Zinchenko_Avito_QA-trainee-assignment-spring-2026/blob/main/TESTCASES.md#%D1%82%D0%B5%D1%81%D1%82-%D0%BA%D0%B5%D0%B9%D1%81%D1%8B)
 
 <ins>**ID: TAS-009**</ins>
 
@@ -990,7 +990,7 @@ POST {{baseUrl}}/{{api1}}/item c телом
 
 ### Получение статистики объявлений негативные
 
-[Наверх](https://github.com/Sumeruk/Zinchenko_Avito_QA-trainee-assignment-spring-2026/blob/main/docs/TESTCASES.md#%D1%82%D0%B5%D1%81%D1%82-%D0%BA%D0%B5%D0%B9%D1%81%D1%8B)
+[Наверх](https://github.com/Sumeruk/Zinchenko_Avito_QA-trainee-assignment-spring-2026/blob/main/TESTCASES.md#%D1%82%D0%B5%D1%81%D1%82-%D0%BA%D0%B5%D0%B9%D1%81%D1%8B)
 
 <ins>**ID: TAS-024**</ins>
 
@@ -1039,7 +1039,7 @@ POST {{baseUrl}}/{{api1}}/item c телом
  
 ### Создание объявления корнер-кейсы
 
-[Наверх](https://github.com/Sumeruk/Zinchenko_Avito_QA-trainee-assignment-spring-2026/blob/main/docs/TESTCASES.md#%D1%82%D0%B5%D1%81%D1%82-%D0%BA%D0%B5%D0%B9%D1%81%D1%8B)
+[Наверх](https://github.com/Sumeruk/Zinchenko_Avito_QA-trainee-assignment-spring-2026/blob/main/TESTCASES.md#%D1%82%D0%B5%D1%81%D1%82-%D0%BA%D0%B5%D0%B9%D1%81%D1%8B)
 
 <ins>**ID: TAS-023**</ins> 
 
