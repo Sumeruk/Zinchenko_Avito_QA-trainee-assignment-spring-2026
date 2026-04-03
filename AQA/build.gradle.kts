@@ -1,5 +1,6 @@
 plugins {
     id("java")
+    id("io.qameta.allure") version "3.1.0"
 }
 
 group = "ru.avito.qa"
@@ -15,6 +16,9 @@ dependencies {
     // Source: https://mvnrepository.com/artifact/io.rest-assured/rest-assured
     testImplementation("io.rest-assured:rest-assured:5.5.6")
     testImplementation("io.rest-assured:json-schema-validator:5.5.6")
+
+    // Source: https://mvnrepository.com/artifact/io.rest-assured/json-schema-validator
+    implementation("io.rest-assured:json-schema-validator:5.5.6")
 
     testImplementation(platform("org.junit:junit-bom:5.10.0"))
     testImplementation("org.junit.jupiter:junit-jupiter")
@@ -41,4 +45,15 @@ dependencies {
 
 tasks.test {
     useJUnitPlatform()
+}
+
+tasks.withType<JavaCompile>().configureEach {
+    options.encoding = "UTF-8"
+}
+
+tasks.withType<Test>().configureEach {
+    ignoreFailures = true
+
+    jvmArgs = listOf("-Dfile.encoding=UTF-8")
+    systemProperty("file.encoding", "UTF-8")
 }

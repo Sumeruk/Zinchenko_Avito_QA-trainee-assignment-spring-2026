@@ -1,17 +1,16 @@
 package model.responses;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import java.time.LocalDateTime;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import java.time.ZonedDateTime;
-import java.util.UUID;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import mock.CustomLocalDateTimeDeserializer;
+import utils.CustomZonedDateTimeDeserializer;
+import utils.CustomZonedDateTimeSerializer;
 import model.Statistics;
 
 @Data
@@ -22,12 +21,13 @@ import model.Statistics;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class CreateSuccessResponse {
 
-    private UUID id;
+    private String id;
     private Long sellerId;
     private String name;
     private Integer price;
     private Statistics statistics;
-    @JsonDeserialize(using = CustomLocalDateTimeDeserializer.class)
-    private LocalDateTime createdAt;
+    @JsonDeserialize(using = CustomZonedDateTimeDeserializer.class)
+    @JsonSerialize(using = CustomZonedDateTimeSerializer.class)
+    private ZonedDateTime createdAt;
 
 }

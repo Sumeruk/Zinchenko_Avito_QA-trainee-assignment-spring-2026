@@ -2,7 +2,9 @@ package config;
 
 import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
+import java.util.UUID;
 import model.Item;
+import model.customModels.CustomItem;
 
 public class ApiClient {
     private final RequestSpecification spec;
@@ -14,6 +16,12 @@ public class ApiClient {
     // ========== API v1 ==========
 
     public Response createItem(Item item) {
+        return spec.body(item)
+                .when()
+                .post(Config.getV1Path() + "/item");
+    }
+
+    public Response createItem(CustomItem item) {
         return spec.body(item)
                 .when()
                 .post(Config.getV1Path() + "/item");
@@ -39,7 +47,7 @@ public class ApiClient {
 
     // ========== API v2 ==========
 
-    public Response deleteItem(String id) {
+    public Response deleteItem(UUID id) {
         return spec.pathParam("id", id)
                 .when()
                 .delete(Config.getV2Path() + "/item/{id}");

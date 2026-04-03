@@ -1,4 +1,4 @@
-package model;
+package model.customModels;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import model.Statistics;
 
 @Data
 @Builder
@@ -13,10 +14,10 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class Item {
+public class CustomStatistics {
 
-    private Long sellerId;
-    private String name;
-    private Long price;
-    private Statistics statistics;
+    private Object likes;
+    private Object viewCount;
+    private Object contacts;
+
 }

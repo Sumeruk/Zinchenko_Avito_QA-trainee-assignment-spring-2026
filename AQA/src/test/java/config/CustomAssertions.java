@@ -2,31 +2,103 @@ package config;
 
 
 import io.restassured.response.Response;
-import java.time.LocalDateTime;
+import java.time.Duration;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.List;
+import java.util.UUID;
+
 import model.Item;
 import model.Statistics;
 import model.responses.CreateSuccessResponse;
+import org.assertj.core.api.Assertions;
 import org.assertj.core.api.SoftAssertions;
+import org.junit.jupiter.api.function.Executable;
+
+import static java.util.stream.Collectors.toList;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.assertj.core.api.Assertions.assertThatCode;
+
 
 public class CustomAssertions {
+    private static final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSSSSS Z Z");
 
     public static void assertItemResponse(Response response, Item expected) {
+
+        SoftAssertions softly = new SoftAssertions();
+
+        assertItemResponse(response, expected, softly);
+
+        softly.assertAll();
+    }
+
+    private static void assertItemResponse(Response response, Item expected, SoftAssertions softly) {
+
         response.then()
                 .statusCode(200)
                 .contentType("application/json");
 
-        CreateSuccessResponse createSuccessResponse = response.as(CreateSuccessResponse.class);
+        CreateSuccessResponse actual = response.as(CreateSuccessResponse.class);
 
-        System.out.println("DEBUG --- пришедший ответ " + createSuccessResponse.toString());
+        softly.assertThatCode(() -> UUID.fromString(actual.getId()))
+                .as("ID должен быть валидным UUID")
+                .doesNotThrowAnyException();
 
-        LocalDateTime afterRequest = LocalDateTime.now();
+        softly.assertThat(actual.getSellerId())
+                .as("Не совпадает sellerId")
+                .isEqualTo(expected.getSellerId());
 
-        String uuid = response.jsonPath().getString("id");
+        softly.assertThat(actual.getName())
+                .as("Не совпадает name")
+                .isEqualTo(expected.getName());
 
-        response.body().prettyPrint();
+        softly.assertThat(actual.getPrice())
+                .as("Не совпадает price")
+                .isEqualTo(expected.getPrice().intValue());
 
+        softly.assertThat(actual.getStatistics())
+                .extracting("likes")
+                .as("Не совпадает likes")
+                .isEqualTo(expected.getStatistics().getLikes());
+
+        softly.assertThat(actual.getStatistics())
+                .extracting("viewCount")
+                .as("Не совпадает viewCount")
+                .isEqualTo(expected.getStatistics().getViewCount());
+
+        softly.assertThat(actual.getStatistics())
+                .extracting("contacts")
+                .as("Не совпадает contacts")
+                .isEqualTo(expected.getStatistics().getContacts());
+
+        ZonedDateTime timeOfRequest = ZonedDateTime.now();
+        softly.assertThat(actual.getCreatedAt())
+                .as("Большая разница между значениями createdAt")
+                .isNotNull()
+                .isCloseTo(timeOfRequest, Assertions.within(Duration.ofMinutes(0)));
+
+    }
+
+    public static void assertItemResponsesList(List<Response> responses, Item item) {
+
+        List<String> fieldValues = responses.stream()
+                .map(r -> r.jsonPath().get("id"))
+                .map(Object::toString)
+                .toList();
+
+        assertThat(fieldValues)
+                .as("Поле 'id' во всех ответах должно быть уникальным")
+                .doesNotHaveDuplicates();
+
+        SoftAssertions softly = new SoftAssertions();
+
+        for (Response response : responses) {
+            assertItemResponse(response, item, softly);
+        }
+
+        softly.assertAll();
     }
 
     public static void assertStatisticsResponse(Response response) {
@@ -66,7 +138,6 @@ public class CustomAssertions {
         softly.assertThat(actual.getName()).isEqualTo(expected.getName());
         softly.assertThat(actual.getPrice()).isEqualTo(expected.getPrice());
         softly.assertThat(actual.getSellerId()).isEqualTo(expected.getSellerId());
-        softly.assertThat(actual.getCreatedAt()).isNotNull();
         return softly;
     }
 }

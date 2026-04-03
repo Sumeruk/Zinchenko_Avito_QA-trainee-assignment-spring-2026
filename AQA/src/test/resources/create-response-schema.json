@@ -1,0 +1,35 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "CreateSuccessResponse",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string"
+    },
+    "sellerId": {
+      "type": "integer"
+    },
+    "name": {
+      "type": "string"
+    },
+    "price": {
+      "type": "integer"
+    },
+    "statistics": {
+      "type": "object",
+      "properties": {
+        "likes": { "type": "integer" },
+        "viewCount": { "type": "integer" },
+        "contacts": { "type": "integer" }
+      },
+      "required": ["likes", "viewCount", "contacts"],
+      "additionalProperties": false
+    },
+    "createdAt": {
+      "type": "string",
+      "pattern": "^\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2}\\.\\d{6} [+-]\\d{4} [+-]\\d{4}$"
+    }
+  },
+  "required": ["id", "sellerId", "name", "price", "statistics", "createdAt"],
+  "additionalProperties": false
+}

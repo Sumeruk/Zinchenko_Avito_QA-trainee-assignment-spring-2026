@@ -1,4 +1,4 @@
-package model;
+package model.responses;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -13,10 +13,9 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class Item {
+public class ResultResponse {
 
-    private Long sellerId;
-    private String name;
-    private Long price;
-    private Statistics statistics;
+    private String message;
+    private String messages;
+
 }

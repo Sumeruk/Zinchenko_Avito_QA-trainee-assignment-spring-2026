@@ -52,9 +52,26 @@ public class ItemMockServer {
 
 
             if (jsonNode.isObject()) {
-                jsonNode.fields().forEachRemaining(entry ->
-                        responseNode.set(entry.getKey(), entry.getValue())
-                );
+//                jsonNode.fields().forEachRemaining(entry ->
+//                        responseNode.set(entry.getKey(), entry.getValue())
+//                );
+
+                // МОК С ОШИБКОЙ
+                jsonNode.fields().forEachRemaining(entry -> {
+                    String key = entry.getKey();
+                    JsonNode value = entry.getValue();
+
+                    // Эмуляция ошибки: добавляем 1 к числовым полям
+                    if (value.isLong() || value.isInt()) {
+                        long modifiedValue = value.asLong() + 1;
+                        responseNode.put(key, modifiedValue);
+                    } else if (value.isTextual()) {
+                        // Для строк добавляем "1" в конец
+                        responseNode.put(key, value.asText() + "1");
+                    } else {
+                        responseNode.set(key, value);
+                    }
+                });
             }
 
             responseNode.put("id", UUID.randomUUID().toString());

@@ -3,6 +3,8 @@ package model;
 import com.github.javafaker.Faker;
 
 import java.util.concurrent.ThreadLocalRandom;
+import model.customModels.CustomItem;
+import model.customModels.CustomStatistics;
 
 public class TestDataFactory {
 
@@ -66,28 +68,40 @@ public class TestDataFactory {
                 .build();
     }
 
-    /**
-     * Генерирует Item с невалидными данными для негативных тестов
-     */
-    public static Item createInvalidItem(InvalidField field) {
-        Item.ItemBuilder builder = Item.builder()
-                .sellerId(generateUniqueSellerId())
-                .name("Test Item");
+    public static CustomItem createItemWithCustomValue(InvalidField field, Object value) {
+
+        CustomItem customItem = createCustomItem();
 
         switch (field) {
-            case MISSING_NAME -> builder.name(null);
-            case EMPTY_NAME -> builder.name("");
-            case NEGATIVE_PRICE -> builder.price(-100L);
-            case ZERO_PRICE -> builder.price(0L);
-            case MISSING_SELLER -> builder.sellerId(null);
-            case INVALID_PRICE -> builder.price((long) Double.NaN);
+
+            case SELLER_ID -> customItem.setSellerId(value);
+            case NAME -> customItem.setName(value);
+            case PRICE -> customItem.setPrice(value);
+            case STATISTICS_LIKES -> customItem.getStatistics().setLikes(value);
+            case STATISTICS_VIEW_COUNT -> customItem.getStatistics().setViewCount(value);
+            case STATISTICS_CONTACTS -> customItem.getStatistics().setContacts(value);
         }
+
+        return customItem;
+    }
+
+    private static CustomItem createCustomItem() {
+
+        CustomItem.CustomItemBuilder builder = CustomItem.builder()
+                .sellerId(faker.number().randomNumber())
+                .name(faker.commerce().productName())
+                .price(faker.number().randomNumber())
+                .statistics(CustomStatistics.builder()
+                        .likes(3)
+                        .viewCount(3)
+                        .contacts(3)
+                        .build());
 
         return builder.build();
     }
 
     public enum InvalidField {
-        MISSING_NAME, EMPTY_NAME, NEGATIVE_PRICE, ZERO_PRICE,
-        MISSING_SELLER, INVALID_PRICE
+        SELLER_ID, NAME, PRICE, STATISTICS_LIKES,
+        STATISTICS_VIEW_COUNT, STATISTICS_CONTACTS
     }
 }
