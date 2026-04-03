@@ -1,7 +1,6 @@
 package test.assertions;
 
 
-import api.client.ApiClient;
 import io.restassured.common.mapper.TypeRef;
 import io.restassured.response.Response;
 import java.time.Duration;
@@ -12,8 +11,7 @@ import java.util.UUID;
 
 import model.NewItem;
 import model.Statistics;
-import model.responses.BadRequestResponse;
-import model.responses.CreateSuccessResponse;
+import model.responses.CreatedItem;
 import org.assertj.core.api.Assertions;
 import org.assertj.core.api.SoftAssertions;
 
@@ -35,11 +33,12 @@ public class CustomAssertions {
 
     private static void assertItemResponse(Response response, NewItem expected, SoftAssertions softly) {
 
-        response.then()
-                .statusCode(200)
-                .contentType("application/json");
+        int actualStatus = response.getStatusCode();
+        softly.assertThat(actualStatus)
+                .as(String.format("Ожидается %d при создании объявления", 200))
+                .isEqualTo(200);
 
-        CreateSuccessResponse actual = response.as(CreateSuccessResponse.class);
+        CreatedItem actual = response.as(CreatedItem.class);
 
         softly.assertThatCode(() -> UUID.fromString(actual.getId()))
                 .as("ID должен быть валидным UUID")
@@ -100,35 +99,14 @@ public class CustomAssertions {
         softly.assertAll();
     }
 
-    public static void assertBadRequestResponse(Response badResponse, String badFieldName) {
-
-        badResponse.then()
-                .statusCode(400)
-                .contentType("application/json");
-
-        BadRequestResponse badRequest = badResponse.as(BadRequestResponse.class);
+    public static void assertStatisticsListResponse(Response response, NewItem newItem) {
 
         SoftAssertions softly = new SoftAssertions();
 
-        softly.assertThat(badRequest.getStatus())
-                .as("Не совпадает поле status")
-                .isEqualTo("400");
-
-        softly.assertThat(badRequest.getResult())
-                .extracting("message")
-                .as("Нет информации о некорректном поле в message")
-                .isNotNull()
-                .asString()
-                .contains(badFieldName);
-
-        softly.assertAll();
-
-    }
-
-    public static void assertStatisticsListResponse(Response response, NewItem newItem) {
-        response.then()
-                .statusCode(200)
-                .contentType("application/json");
+        int actualStatus = response.getStatusCode();
+        softly.assertThat(actualStatus)
+                .as(String.format("Ожидается %d при получении статистики объявления", 200))
+                .isEqualTo(200);
 
         List<Statistics> stats = response.body().as(new TypeRef<>() {
         });
@@ -136,7 +114,6 @@ public class CustomAssertions {
         assertThat(stats).isNotNull();
         assertThat(stats).isNotEmpty();
 
-        SoftAssertions softly = new SoftAssertions();
 
         for (Statistics stat : stats) {
             assertStatistic(stat, newItem.getStatistics(), softly);
@@ -162,38 +139,105 @@ public class CustomAssertions {
 
     }
 
+    public static void assertBadRequestResponse(Response response, String badFieldName) {
+        assertErrorResponse(response, 400, badFieldName, softly -> {
+            softly.assertThat(response.jsonPath().getString("result.message"))
+                    .as(String.format("Нет информации о некорректном поле %s в message, пришедший ответ %s",
+                            badFieldName,
+                            response.body().asString()))
+                    .isNotNull()
+                    .contains(badFieldName);
+        });
+    }
+
     public static void assertNotFoundStatisticResponse(Response response, UUID id) {
+        assertErrorResponse(response, 404, String.valueOf(id), softly -> {
+            softly.assertThat(response.jsonPath().getString("result.message"))
+                    .as(String.format("Нет информации о некорректном значении id в message, пришедший ответ %s",
+                            response.body().asString()))
+                    .isNotNull()
+                    .contains(String.valueOf(id));
+        });
+    }
 
-        response.then()
-                .statusCode(404)
-                .contentType("application/json");
+    public static void assertInvalidIdStatisticResponse(Response response) {
+        assertErrorResponse(response, 400, "некорректном идентификаторе", softly -> {
+            softly.assertThat(response.jsonPath().getString("result.message"))
+                    .as(String.format("Нет информации о некорректном значении id в message, пришедший ответ %s",
+                            response.body().asString()))
+                    .isNotNull()
+                    .containsAnyOf("некорреrтный", "идентификатор");
+        });
+    }
 
-        BadRequestResponse badRequest = response.as(BadRequestResponse.class);
+    private static void assertErrorResponse(Response response, int expectedStatus,
+                                            String description,
+                                            java.util.function.Consumer<SoftAssertions> assertions) {
 
         SoftAssertions softly = new SoftAssertions();
 
-        softly.assertThat(badRequest.getStatus())
-                .as("Не совпадает поле status")
-                .isEqualTo("404");
+        int actualStatus = response.getStatusCode();
+        softly.assertThat(actualStatus)
+                .as(String.format("Ожидается %d", expectedStatus))
+                .isEqualTo(expectedStatus);
 
-        softly.assertThat(badRequest.getResult())
-                .extracting("message")
-                .as("Нет информации о id в message")
-                .isNotNull()
-                .asString()
-                .contains(String.valueOf(id));
+
+        softly.assertThat(response.jsonPath().getString("status"))
+                .as("Не совпадает поле status")
+                .isEqualTo(String.valueOf(expectedStatus));
+
+        assertions.accept(softly);
+        softly.assertAll();
+    }
+
+    public static void assertItemDeleted(Response response) {
+
+        SoftAssertions softly = new SoftAssertions();
+
+        int actualStatus = response.getStatusCode();
+        softly.assertThat(actualStatus)
+                .as(String.format("Ожидается %d при удалении объявления", 200))
+                .isEqualTo(200);
+
+    }
+
+    public static void assertItemAtSellerListResponse(Response createdItemsResponse,
+                                                      UUID itemId,
+                                                      Long sellerId,
+                                                      boolean contains) {
+
+        SoftAssertions softly = new SoftAssertions();
+
+        List<CreatedItem> itemsOfSeller = createdItemsResponse.body().as(new TypeRef<>() {
+        });
+
+        int actualStatus = createdItemsResponse.getStatusCode();
+        softly.assertThat(actualStatus)
+                .as(String.format("Ожидается %d при поиске объявлений у продавца %d", 200, sellerId))
+                .isEqualTo(200);
+
+
+        if (contains) {
+
+            softly.assertThat(itemsOfSeller)
+                    .as(String.format("Не найдено объявление %s у продавца", itemId))
+                    .extracting(CreatedItem::getId)
+                    .asString()
+                    .contains(String.valueOf(itemId));
+
+        } else {
+
+            softly.assertThat(itemsOfSeller)
+                    .as(String.format("Найдено объявление %s у продавца", itemId))
+                    .extracting(CreatedItem::getId)
+                    .asString()
+                    .doesNotContain(String.valueOf(itemId));
+
+        }
 
         softly.assertAll();
 
 
-    }
-
-    public static void assertItemDeleted(Response response, String itemId, ApiClient client) {
-        response.then().statusCode(200);
-
-        // Verify item is actually deleted
-        Response getItemResponse = client.getItemById(itemId);
-        getItemResponse.then().statusCode(404);
     }
 
     /**

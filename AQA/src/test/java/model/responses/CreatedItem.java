@@ -19,7 +19,7 @@ import model.Statistics;
 @AllArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class CreateSuccessResponse {
+public class CreatedItem {
 
     private String id;
     private Long sellerId;

@@ -16,10 +16,14 @@ public class TestDataFactory {
     private static final Long SELLER_ID_MAX = 999999L;
 
     /**
-     * Генерирует уникальный sellerId в заданном диапазоне
+     * Генерирует уникальный sellerId
      */
     public static UUID generateUniqueItemId() {
         return UUID.randomUUID();
+    }
+
+    public static String generateSimpleStringItemId() {
+        return faker.lorem().sentence();
     }
 
     /**

@@ -23,8 +23,7 @@ import utils.testData.TestDataFactory;
 
 import static io.restassured.module.jsv.JsonSchemaValidator.matchesJsonSchemaInClasspath;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static test.assertions.CustomAssertions.assertNotFoundStatisticResponse;
-import static test.assertions.CustomAssertions.assertStatisticsListResponse;
+import static test.assertions.CustomAssertions.*;
 
 @Tag("api")
 @Tag("statistics")
@@ -108,6 +107,35 @@ public class StatisticsApiTest extends BaseTest {
         );
 
         assertNotFoundStatisticResponse(response, generatedUUID);
+
+        //МОКИ
+//        mockServer.stop();
+    }
+
+    @DisplayName("TAS-025: Получение статистики объявления негативное по невалидному UUID")
+    @Test
+    @Description("Проверка получения статистики по невалидному UUID объявления")
+    public void getStatisticsByInvalidId() throws IOException {
+        markNegative();
+
+        //МОКИ
+//        mockServer = new ItemMockServer(PORT);
+//        mockServer.start();
+//        RestAssured.baseURI = "http://localhost";
+//        RestAssured.port = PORT;
+
+        String generatedUUID = TestDataFactory.generateSimpleStringItemId();
+
+        Response response = apiClient.getStatisticV2(generatedUUID);
+
+        String responseBody = response.asString();
+        assertThat(
+                "Несоответствие схемы ответа при поиске статистики объявления",
+                responseBody,
+                matchesJsonSchemaInClasspath("bad-request-schema.json")
+        );
+
+        assertInvalidIdStatisticResponse(response);
 
         //МОКИ
 //        mockServer.stop();

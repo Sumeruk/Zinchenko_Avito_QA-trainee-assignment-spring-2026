@@ -7,6 +7,8 @@ import java.util.UUID;
 import model.NewItem;
 import model.customModels.CustomNewItem;
 
+import static io.restassured.RestAssured.given;
+
 public class ApiClient {
     private final RequestSpecification spec;
 
@@ -17,37 +19,44 @@ public class ApiClient {
     // ========== API v1 ==========
 
     public Response createItem(NewItem newItem) {
-        return spec.body(newItem)
+        return given().spec(spec)
+                .body(newItem)
                 .when()
                 .post(Config.getV1Path() + "/item");
     }
 
     public Response createCustomItem(CustomNewItem item) {
-        return spec.body(item)
+        return given().spec(spec)
+                .body(item)
                 .when()
                 .post(Config.getV1Path() + "/item");
     }
 
     public Response createItemFromString(String item) {
-        return spec.body(item)
+        return given().spec(spec)
+                .body(item)
                 .when()
                 .post(Config.getV1Path() + "/item");
     }
 
     public Response getItemById(String id) {
-        return spec.pathParam("id", id)
+        return given().spec(spec)
+                .pathParam("id", id)
                 .when()
                 .get(Config.getV1Path() + "/item/{id}");
     }
 
     public Response getItemsBySellerId(Long sellerId) {
-        return spec.pathParam("sellerID", sellerId)
+
+        return given().spec(spec)
+                .pathParam("sellerID", sellerId)
                 .when()
                 .get(Config.getV1Path() + "/{sellerID}/item");
     }
 
     public Response getStatisticV1(UUID id) {
-        return spec.pathParam("id", id)
+        return given().spec(spec)
+                .pathParam("id", id)
                 .when()
                 .get(Config.getV1Path() + "/statistic/{id}");
     }
@@ -55,13 +64,22 @@ public class ApiClient {
     // ========== API v2 ==========
 
     public Response deleteItem(UUID id) {
-        return spec.pathParam("id", id)
+        return given().spec(spec)
+                .pathParam("id", id)
                 .when()
                 .delete(Config.getV2Path() + "/item/{id}");
     }
 
     public Response getStatisticV2(UUID id) {
-        return spec.pathParam("id", id)
+        return given().spec(spec)
+                .pathParam("id", id)
+                .when()
+                .get(Config.getV2Path() + "/statistic/{id}");
+    }
+
+    public Response getStatisticV2(String id) {
+        return given().spec(spec)
+                .pathParam("id", id)
                 .when()
                 .get(Config.getV2Path() + "/statistic/{id}");
     }
