@@ -1,31 +1,31 @@
-package api;
+package test;
 
-import config.BaseTest;
-import config.CustomAssertions;
+import test.assertions.CustomAssertions;
 import io.qameta.allure.Description;
-import io.restassured.RestAssured;
 import io.restassured.response.Response;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Stream;
-import javax.mail.FetchProfile;
 import mock.ItemMockServer;
 import model.NewItem;
-import model.TestDataFactory;
+import utils.testData.TestDataFactory;
 import model.customModels.CustomNewItem;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
-import static config.CustomAssertions.*;
+import static test.assertions.CustomAssertions.*;
 import static io.restassured.module.jsv.JsonSchemaValidator.matchesJsonSchemaInClasspath;
 import static org.hamcrest.MatcherAssert.assertThat;
 
+@Tag("api")
+@Tag("newItems")
 public class ItemApiTest extends BaseTest {
 
     private List<UUID> createdIds = new ArrayList<>();
@@ -53,7 +53,7 @@ public class ItemApiTest extends BaseTest {
         String responseBody = response.getBody().asString();
 
         assertThat(
-                "Несоответствие схемы ответа сервера",
+                "Несоответствие схемы ответа при создании объявления сервера",
                 responseBody,
                 matchesJsonSchemaInClasspath("create-response-schema.json")
         );
@@ -90,7 +90,7 @@ public class ItemApiTest extends BaseTest {
             String responseBody = response.getBody().asString();
 
             assertThat(
-                    "Несоответствие схемы ответа сервера",
+                    "Несоответствие схемы ответа при создании объявления сервера",
                     responseBody,
                     matchesJsonSchemaInClasspath("create-response-schema.json")
             );
@@ -105,9 +105,75 @@ public class ItemApiTest extends BaseTest {
 
     }
 
+    @DisplayName("TAS-003: Создание объявления с максимальным price")
+    @Test
+    @Description("Проверка успешного создания объявления с максимальным price")
+    void createItemMaxPriceSuccess() throws IOException {
+        markPositive();
+
+        // МОКИ
+//        mockServer = new ItemMockServer(PORT);
+//        mockServer.start();
+//        RestAssured.baseURI = "http://localhost";
+//        RestAssured.port = PORT;
+
+        CustomNewItem item = TestDataFactory.createItemWithCustomValue(
+                TestDataFactory.InvalidField.PRICE,
+                Long.MAX_VALUE
+        );
+
+        Response response = apiClient.createCustomItem(item);
+
+        String responseBody = response.asString();
+        assertThat(
+                "Несоответствие схемы ответа при создании объявления сервера",
+                responseBody,
+                matchesJsonSchemaInClasspath("bad-request-schema.json")
+        );
+
+        CustomAssertions.assertBadRequestResponse(response, TestDataFactory.InvalidField.SELLER_ID.getFieldName());
+
+        // МОКИ
+//        mockServer.stop();
+
+    }
+
+    @DisplayName("TAS-004: Создание объявления позитивное c отрицательным sellerId")
+    @Test
+    @Description("Поскольку в постановке сказано, что sellerId - целое число, оно может быть отрицательным")
+    void createItemNegativeSellerIdSuccess() throws IOException {
+        markPositive();
+
+        // МОКИ
+//        mockServer = new ItemMockServer(PORT);
+//        mockServer.start();
+//        RestAssured.baseURI = "http://localhost";
+//        RestAssured.port = PORT;
+
+        CustomNewItem item = TestDataFactory.createItemWithCustomValue(
+                TestDataFactory.InvalidField.PRICE,
+                Long.MAX_VALUE
+        );
+
+        Response response = apiClient.createCustomItem(item);
+
+        String responseBody = response.asString();
+        assertThat(
+                "Несоответствие схемы ответа при создании объявления сервера",
+                responseBody,
+                matchesJsonSchemaInClasspath("bad-request-schema.json")
+        );
+
+        CustomAssertions.assertBadRequestResponse(response, TestDataFactory.InvalidField.SELLER_ID.getFieldName());
+
+        // МОКИ
+//        mockServer.stop();
+
+    }
+
 
     @AfterEach
-    public void deleteCreatedItem() throws IOException {
+    public void deleteCreatedItem() {
 
         createdIds.stream()
                 .map(uuid -> apiClient.deleteItem(uuid));
@@ -115,10 +181,10 @@ public class ItemApiTest extends BaseTest {
         createdIds.clear();
     }
 
-    @DisplayName("TAS-016: Создание объявления с некорректными sellerId")
+    @DisplayName("TAS-016: Создание объявления с некорректными типами sellerId")
     @ParameterizedTest(name = "={0}")
     @MethodSource("uncorrectedSellerIdProvider")
-    @Description("Проверка валидации формата sellerId")
+    @Description("Проверка обработки типов sellerId")
     void createItemUncorrectedSellerId(Object uncorrectedSellerId) throws IOException {
         markNegative();
 
@@ -137,7 +203,7 @@ public class ItemApiTest extends BaseTest {
 
         String responseBody = response.asString();
         assertThat(
-                "Несоответствие схемы ответа сервера",
+                "Несоответствие схемы ответа при ошибке входных данных для создании объявления",
                 responseBody,
                 matchesJsonSchemaInClasspath("bad-request-schema.json")
         );
@@ -160,7 +226,7 @@ public class ItemApiTest extends BaseTest {
     @DisplayName("TAS-017: Создание объявления с невалидным sellerId")
     @ParameterizedTest(name = "={0}")
     @MethodSource("invalidSellerIdProvider")
-    @Description("Проверка валидации формата sellerId")
+    @Description("Проверка корректности формата sellerId")
     void createItemInvalidSellerId(String invalidSellerId) throws IOException {
         markNegative();
 
@@ -205,7 +271,7 @@ public class ItemApiTest extends BaseTest {
     static Stream<Arguments> invalidSellerIdProvider() {
         return Stream.of(
                 Arguments.of("01"),
-                Arguments.of("abc"),
+                Arguments.of("abc01-1"),
                 Arguments.of("-0")
         );
     }
@@ -264,7 +330,7 @@ public class ItemApiTest extends BaseTest {
 
 //        Response response = apiClient.getStatisticV1(itemId);
 
-//        assertStatisticsResponse(response);
+//        assertStatisticsListResponse(response);
 //    }
 //
 //    @DisplayName("NEG-001: Создание объявления с пустым именем")

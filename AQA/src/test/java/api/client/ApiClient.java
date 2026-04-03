@@ -1,5 +1,6 @@
-package config;
+package api.client;
 
+import config.Config;
 import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
 import java.util.UUID;
@@ -45,7 +46,7 @@ public class ApiClient {
                 .get(Config.getV1Path() + "/{sellerID}/item");
     }
 
-    public Response getStatisticV1(String id) {
+    public Response getStatisticV1(UUID id) {
         return spec.pathParam("id", id)
                 .when()
                 .get(Config.getV1Path() + "/statistic/{id}");

@@ -1,6 +1,8 @@
-package config;
+package test.assertions;
 
 
+import api.client.ApiClient;
+import io.restassured.common.mapper.TypeRef;
 import io.restassured.response.Response;
 import java.time.Duration;
 import java.time.ZonedDateTime;
@@ -123,25 +125,41 @@ public class CustomAssertions {
 
     }
 
-    public static void assertStatisticsResponse(Response response) {
+    public static void assertStatisticsListResponse(Response response, NewItem newItem) {
         response.then()
                 .statusCode(200)
                 .contentType("application/json");
 
-        Statistics[] stats = response.as(Statistics[].class);
+        List<Statistics> stats = response.body().as(new TypeRef<>() {
+        });
+
         assertThat(stats).isNotNull();
         assertThat(stats).isNotEmpty();
 
+        SoftAssertions softly = new SoftAssertions();
+
         for (Statistics stat : stats) {
-            assertThat(stat.getLikes()).isGreaterThanOrEqualTo(0);
-            assertThat(stat.getViewCount()).isGreaterThanOrEqualTo(0);
-            assertThat(stat.getContacts()).isGreaterThanOrEqualTo(0);
+            assertStatistic(stat, newItem.getStatistics(), softly);
         }
+
+        softly.assertAll();
+
     }
 
-    public static void assertErrorResponse(Response response, int expectedCode) {
-        response.then().statusCode(expectedCode);
-        assertThat(response.contentType()).contains("application/json");
+    private static void assertStatistic(Statistics statisticsActual, Statistics statisticsExpected, SoftAssertions softly) {
+
+        softly.assertThat(statisticsActual.getLikes())
+                .as("Не совпадает likes")
+                .isEqualTo(statisticsExpected.getLikes());
+
+        softly.assertThat(statisticsActual.getViewCount())
+                .as("Не совпадает viewCount")
+                .isEqualTo(statisticsExpected.getViewCount());
+
+        softly.assertThat(statisticsActual.getContacts())
+                .as("Не совпадает contacts")
+                .isEqualTo(statisticsExpected.getContacts());
+
     }
 
     public static void assertItemDeleted(Response response, String itemId, ApiClient client) {

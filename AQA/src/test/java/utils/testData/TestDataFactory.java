@@ -1,8 +1,10 @@
-package model;
+package utils.testData;
 
 import com.github.javafaker.Faker;
 
 import java.util.concurrent.ThreadLocalRandom;
+import model.NewItem;
+import model.Statistics;
 import model.customModels.CustomNewItem;
 import model.customModels.CustomStatistics;
 

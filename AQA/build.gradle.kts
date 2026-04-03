@@ -24,6 +24,9 @@ dependencies {
     testImplementation("org.junit.jupiter:junit-jupiter")
     testImplementation("org.junit.jupiter:junit-jupiter-params:5.10.0")
 
+    // Source: https://mvnrepository.com/artifact/org.junit.platform/junit-platform-suite-api
+//    testImplementation("org.junit.platform:junit-platform-suite-api:6.0.3")
+
     // Source: https://mvnrepository.com/artifact/org.assertj/assertj-core
     testImplementation("org.assertj:assertj-core:3.27.7")
 

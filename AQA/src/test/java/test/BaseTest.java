@@ -1,5 +1,6 @@
-package config;
+package test;
 
+import api.client.ApiClient;
 import io.qameta.allure.Epic;
 import io.qameta.allure.Feature;
 import io.qameta.allure.Story;

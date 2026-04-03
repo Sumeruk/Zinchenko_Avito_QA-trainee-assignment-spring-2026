@@ -3,7 +3,6 @@ package config;
 import io.restassured.RestAssured;
 import io.restassured.config.HttpClientConfig;
 import io.restassured.config.RestAssuredConfig;
-import io.restassured.filter.log.LogDetail;
 import io.restassured.specification.RequestSpecification;
 import java.io.IOException;
 import java.io.InputStream;
