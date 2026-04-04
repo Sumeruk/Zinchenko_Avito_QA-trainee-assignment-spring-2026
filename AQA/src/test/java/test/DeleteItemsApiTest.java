@@ -12,7 +12,6 @@ import model.NewItem;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
-import test.assertions.CustomAssertions;
 import utils.testData.TestDataFactory;
 
 import static io.restassured.module.jsv.JsonSchemaValidator.matchesJsonSchemaInClasspath;
@@ -32,7 +31,7 @@ public class DeleteItemsApiTest extends BaseTest {
     @DisplayName("TAS-010: Удаление объявления позитивное")
     @Test
     @Description("Проверка удаления информации об объявлении")
-    void createItemValidDataSuccess() throws IOException {
+    void deleteItemSuccess() throws IOException {
         markPositive();
 
         // МОКИ
@@ -88,7 +87,47 @@ public class DeleteItemsApiTest extends BaseTest {
 
         Response statisticsOfItemResponse = apiClient.getStatisticV1(idCreatedItem);
 
-        assertNotFoundStatisticResponse(statisticsOfItemResponse, idCreatedItem);
+        assertNotFoundResponse(statisticsOfItemResponse, idCreatedItem);
 
     }
+
+    @DisplayName("TAS-014: Удаление объявления повторное")
+    @Test
+    @Description("Проверка работы сервера при удалении уже отсутствующего объявления")
+    void createItemValidDataSuccess() throws IOException {
+        markPositive();
+
+        // МОКИ
+//        mockServer = new ItemMockServer(PORT);
+//        mockServer.start();
+//        RestAssured.baseURI = "http://localhost";
+//        RestAssured.port = PORT;
+
+        NewItem newItem = TestDataFactory.createValidItem();
+
+        Response responseCreate = apiClient.createItem(newItem);
+
+        String responseBody = responseCreate.getBody().asString();
+
+        assertThat(
+                "Несоответствие схемы ответа сервера при создании объявления",
+                responseBody,
+                matchesJsonSchemaInClasspath("create-response-schema.json")
+        );
+
+        UUID idCreatedItem = UUID.fromString(responseCreate.jsonPath().getString("id"));
+
+        createdIds.add(idCreatedItem);
+
+        apiClient.deleteItem(idCreatedItem);
+        Response responseDelete = apiClient.deleteItem(idCreatedItem);
+
+        assertNotFoundResponse(responseDelete, idCreatedItem);
+
+        // МОКИ
+//        mockServer.stop();
+
+    }
+
+
 }

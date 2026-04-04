@@ -1,24 +1,17 @@
 package test;
 
 import io.qameta.allure.Description;
-import io.restassured.RestAssured;
 import io.restassured.response.Response;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.Stream;
 import mock.ItemMockServer;
 import model.NewItem;
-import model.customModels.CustomNewItem;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.Arguments;
-import org.junit.jupiter.params.provider.MethodSource;
-import test.assertions.CustomAssertions;
 import utils.testData.TestDataFactory;
 
 import static io.restassured.module.jsv.JsonSchemaValidator.matchesJsonSchemaInClasspath;
@@ -106,7 +99,7 @@ public class StatisticsApiTest extends BaseTest {
                 matchesJsonSchemaInClasspath("bad-request-schema.json")
         );
 
-        assertNotFoundStatisticResponse(response, generatedUUID);
+        assertNotFoundResponse(response, generatedUUID);
 
         //МОКИ
 //        mockServer.stop();
@@ -135,7 +128,7 @@ public class StatisticsApiTest extends BaseTest {
                 matchesJsonSchemaInClasspath("bad-request-schema.json")
         );
 
-        assertInvalidIdStatisticResponse(response);
+        assertInvalidIdResponse(response);
 
         //МОКИ
 //        mockServer.stop();

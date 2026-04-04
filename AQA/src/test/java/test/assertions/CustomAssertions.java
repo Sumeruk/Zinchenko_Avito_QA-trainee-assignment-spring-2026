@@ -150,7 +150,7 @@ public class CustomAssertions {
         });
     }
 
-    public static void assertNotFoundStatisticResponse(Response response, UUID id) {
+    public static void assertNotFoundResponse(Response response, UUID id) {
         assertErrorResponse(response, 404, String.valueOf(id), softly -> {
             softly.assertThat(response.jsonPath().getString("result.message"))
                     .as(String.format("Нет информации о некорректном значении id в message, пришедший ответ %s",
@@ -160,7 +160,7 @@ public class CustomAssertions {
         });
     }
 
-    public static void assertInvalidIdStatisticResponse(Response response) {
+    public static void assertInvalidIdResponse(Response response) {
         assertErrorResponse(response, 400, "некорректном идентификаторе", softly -> {
             softly.assertThat(response.jsonPath().getString("result.message"))
                     .as(String.format("Нет информации о некорректном значении id в message, пришедший ответ %s",
