@@ -3,7 +3,8 @@ package utils.testData;
 import com.github.javafaker.Faker;
 
 import java.util.UUID;
-import java.util.concurrent.ThreadLocalRandom;
+import java.util.function.Consumer;
+import lombok.Getter;
 import model.NewItem;
 import model.Statistics;
 import model.customModels.CustomNewItem;
@@ -40,6 +41,16 @@ public class TestDataFactory {
                         .contacts(3)
                         .build())
                 .build();
+    }
+
+    public static NewItem createValidItemWithSetValue(Consumer<NewItem> setter) {
+
+        NewItem newItem = createValidItem();
+
+        setter.accept(newItem);
+
+        return newItem;
+
     }
 
     public static CustomNewItem createValidCustomItem() {
@@ -87,19 +98,11 @@ public class TestDataFactory {
                 .build();
     }
 
-    public static CustomNewItem createItemWithCustomValue(InvalidField field, Object value) {
+    public static CustomNewItem createItemWithCustomValue(Consumer<CustomNewItem> setter) {
 
         CustomNewItem customNewItem = createCustomItem();
 
-        switch (field) {
-
-            case SELLER_ID -> customNewItem.setSellerId(value);
-            case NAME -> customNewItem.setName(value);
-            case PRICE -> customNewItem.setPrice(value);
-            case STATISTICS_LIKES -> customNewItem.getStatistics().setLikes(value);
-            case STATISTICS_VIEW_COUNT -> customNewItem.getStatistics().setViewCount(value);
-            case STATISTICS_CONTACTS -> customNewItem.getStatistics().setContacts(value);
-        }
+        setter.accept(customNewItem);
 
         return customNewItem;
     }
@@ -119,6 +122,7 @@ public class TestDataFactory {
         return builder.build();
     }
 
+    @Getter
     public enum InvalidField {
         SELLER_ID("sellerId"),
         NAME("name"),
@@ -133,8 +137,5 @@ public class TestDataFactory {
             this.fieldName = fieldName;
         }
 
-        public String getFieldName() {
-            return fieldName;
-        }
     }
 }

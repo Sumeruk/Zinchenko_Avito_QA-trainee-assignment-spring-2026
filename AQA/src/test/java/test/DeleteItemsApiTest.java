@@ -16,7 +16,10 @@ import utils.testData.TestDataFactory;
 
 import static io.restassured.module.jsv.JsonSchemaValidator.matchesJsonSchemaInClasspath;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static test.assertions.CustomAssertions.*;
+import static test.assertions.ClientErrorAssertions.assertInvalidIdResponse;
+import static test.assertions.ClientErrorAssertions.assertNotFoundResponse;
+import static test.assertions.DeleteAssertions.assertItemDeleted;
+import static test.assertions.SellerListAssertions.assertItemAtSellerListResponse;
 
 @Tag("api")
 @Tag("deleteItems")
@@ -70,7 +73,7 @@ public class DeleteItemsApiTest extends BaseTest {
 
     }
 
-    @Step("Проверка удаление из списка объявлений продавца")
+    @Step("Проверка удаления из списка объявлений продавца")
     private void assertItemAtSellerList(Long sellerId, UUID idCreatedItem) {
 
         Response itemsOfSellerResponse = apiClient.getItemsBySellerId(sellerId);

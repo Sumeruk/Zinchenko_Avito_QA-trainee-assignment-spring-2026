@@ -16,7 +16,9 @@ import utils.testData.TestDataFactory;
 
 import static io.restassured.module.jsv.JsonSchemaValidator.matchesJsonSchemaInClasspath;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static test.assertions.CustomAssertions.*;
+import static test.assertions.ClientErrorAssertions.assertInvalidIdResponse;
+import static test.assertions.ClientErrorAssertions.assertNotFoundResponse;
+import static test.assertions.StatisticAssertions.assertStatisticsListResponse;
 
 @Tag("api")
 @Tag("statistics")
@@ -66,7 +68,7 @@ public class StatisticsApiTest extends BaseTest {
     }
 
     @AfterEach
-    public void deleteCreatedItem() {
+    public void deleteCreatedItems() {
 
         createdIds.stream()
                 .map(uuid -> apiClient.deleteItem(uuid));

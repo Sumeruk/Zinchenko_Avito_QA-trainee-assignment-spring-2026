@@ -20,8 +20,8 @@ import utils.testData.TestDataFactory;
 
 import static io.restassured.module.jsv.JsonSchemaValidator.matchesJsonSchemaInClasspath;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static test.assertions.CustomAssertions.assertExistItemsAtListResponse;
-import static test.assertions.CustomAssertions.assertInvalidIdResponse;
+import static test.assertions.ClientErrorAssertions.assertInvalidIdResponse;
+import static test.assertions.SellerListAssertions.assertExistItemsAtListResponse;
 
 @Tag("api")
 @Tag("receivingSellersItems")
@@ -70,16 +70,12 @@ public class ReceivingSellersItemsTest extends BaseTest {
 
         for (int i = 0; i < numOfItems; i++) {
 
-            System.out.println("DEBUG --- мама я в дубае " + i);
-
             var item = TestDataFactory.createValidItem();
             item.setSellerId(sellerId);
 
             Response responseCreate = apiClient.createItem(item);
 
             String responseBody = responseCreate.getBody().asString();
-
-            System.out.println("DEBUG --- responseBody после создания " + responseBody);
 
             assertThat(
                     "Несоответствие схемы ответа сервера при создании объявления",
@@ -108,12 +104,6 @@ public class ReceivingSellersItemsTest extends BaseTest {
     public void getStatisticsByInvalidId() throws IOException {
         markNegative();
 
-        //МОКИ
-//        mockServer = new ItemMockServer(PORT);
-//        mockServer.start();
-//        RestAssured.baseURI = "http://localhost";
-//        RestAssured.port = PORT;
-
         String generatedId = TestDataFactory.generateSimpleStringItemId();
 
         Response response = apiClient.getItemsByStringSellerId(generatedId);
@@ -127,12 +117,11 @@ public class ReceivingSellersItemsTest extends BaseTest {
 
         assertInvalidIdResponse(response);
 
-        //МОКИ
-//        mockServer.stop();
+
     }
 
     @AfterEach
-    public void deleteCreatedItem() {
+    public void deleteCreatedItems() {
 
         createdIds.stream()
                 .map(uuid -> apiClient.deleteItem(uuid));

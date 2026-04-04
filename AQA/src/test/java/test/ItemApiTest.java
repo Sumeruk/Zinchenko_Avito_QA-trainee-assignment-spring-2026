@@ -1,7 +1,6 @@
 package test;
 
-import io.restassured.RestAssured;
-import test.assertions.CustomAssertions;
+import model.Statistics;
 import io.qameta.allure.Description;
 import io.restassured.response.Response;
 import java.io.IOException;
@@ -21,7 +20,8 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
-import static test.assertions.CustomAssertions.*;
+import static test.assertions.ClientErrorAssertions.assertBadRequestResponse;
+import static test.assertions.CreateItemsAssertions.*;
 import static io.restassured.module.jsv.JsonSchemaValidator.matchesJsonSchemaInClasspath;
 import static org.hamcrest.MatcherAssert.assertThat;
 
@@ -118,21 +118,19 @@ public class ItemApiTest extends BaseTest {
 //        RestAssured.baseURI = "http://localhost";
 //        RestAssured.port = PORT;
 
-        CustomNewItem item = TestDataFactory.createItemWithCustomValue(
-                TestDataFactory.InvalidField.PRICE,
-                Long.MAX_VALUE
-        );
+        NewItem item = TestDataFactory.createValidItemWithSetValue(i -> i.setPrice(Long.MAX_VALUE));
 
-        Response response = apiClient.createCustomItem(item);
+        Response response = apiClient.createItem(item);
 
         String responseBody = response.asString();
         assertThat(
                 "Несоответствие схемы ответа при создании объявления сервера",
                 responseBody,
-                matchesJsonSchemaInClasspath("bad-request-schema.json")
+                matchesJsonSchemaInClasspath("create-response-schema.json")
         );
 
-        CustomAssertions.assertBadRequestResponse(response, TestDataFactory.InvalidField.SELLER_ID.getFieldName());
+        createdIds.add(UUID.fromString(response.jsonPath().getString("id")));
+        assertItemResponse(response, item);
 
         // МОКИ
 //        mockServer.stop();
@@ -151,30 +149,139 @@ public class ItemApiTest extends BaseTest {
 //        RestAssured.baseURI = "http://localhost";
 //        RestAssured.port = PORT;
 
-        CustomNewItem item = TestDataFactory.createItemWithCustomValue(
-                TestDataFactory.InvalidField.PRICE,
-                Long.MAX_VALUE
-        );
+        NewItem item = TestDataFactory.createValidItemWithSetValue(i -> i.setSellerId(-123L));
 
-        Response response = apiClient.createCustomItem(item);
+        Response response = apiClient.createItem(item);
 
         String responseBody = response.asString();
         assertThat(
                 "Несоответствие схемы ответа при создании объявления сервера",
                 responseBody,
-                matchesJsonSchemaInClasspath("bad-request-schema.json")
+                matchesJsonSchemaInClasspath("create-response-schema.json")
         );
 
-        CustomAssertions.assertBadRequestResponse(response, TestDataFactory.InvalidField.SELLER_ID.getFieldName());
+        createdIds.add(UUID.fromString(response.jsonPath().getString("id")));
+        assertItemResponse(response, item);
 
         // МОКИ
 //        mockServer.stop();
 
     }
 
+    @DisplayName("TAS-005: Создание объявления позитивное c нулевым sellerId")
+    @Test
+    @Description("Поскольку в постановке сказано, что sellerId - целое число, оно может быть нулем")
+    void createItemZeroSellerIdSuccess() throws IOException {
+        markPositive();
+
+        // МОКИ
+//        mockServer = new ItemMockServer(PORT);
+//        mockServer.start();
+//        RestAssured.baseURI = "http://localhost";
+//        RestAssured.port = PORT;
+
+        NewItem item = TestDataFactory.createValidItemWithSetValue(i -> i.setSellerId(0L));
+
+        Response response = apiClient.createItem(item);
+
+        String responseBody = response.asString();
+        assertThat(
+                "Несоответствие схемы ответа при создании объявления сервера",
+                responseBody,
+                matchesJsonSchemaInClasspath("create-response-schema.json")
+        );
+
+        createdIds.add(UUID.fromString(response.jsonPath().getString("id")));
+        assertItemResponse(response, item);
+
+        // МОКИ
+//        mockServer.stop();
+
+    }
+
+    @DisplayName("TAS-006: Создание объявления позитивное c нулевым likes")
+    @Test
+    @Description("Должна быть возможность создать объявление с нулевым likes, поскольку возможна ситуация, когда никто" +
+            "не добавит объявление в избранное")
+    void createItemZeroLikesSuccess() throws IOException {
+        markPositive();
+
+        // МОКИ
+//        mockServer = new ItemMockServer(PORT);
+//        mockServer.start();
+//        RestAssured.baseURI = "http://localhost";
+//        RestAssured.port = PORT;
+
+        NewItem item = TestDataFactory.createValidItemWithSetValue(
+                i -> i.setStatistics(new Statistics(0, 2, 2)));
+
+        Response response = apiClient.createItem(item);
+
+        String responseBody = response.asString();
+        assertThat(
+                "Несоответствие схемы ответа при создании объявления сервера",
+                responseBody,
+                matchesJsonSchemaInClasspath("create-response-schema.json")
+        );
+
+        createdIds.add(UUID.fromString(response.jsonPath().getString("id")));
+        assertItemResponse(response, item);
+        // МОКИ
+//        mockServer.stop();
+
+    }
+
+    @DisplayName("TAS-007: Создание объявления позитивное c нулевым viewCount")
+    @Test
+    @Description("Должна быть возможность создать объявление с нулевым viewCount, поскольку возможна ситуация, когда никто" +
+            "не посмотрел объявление")
+    void createItemZeroViewCountSuccess() throws IOException {
+        markPositive();
+
+        NewItem item = TestDataFactory.createValidItemWithSetValue(
+                i -> i.setStatistics(new Statistics(2, 0, 2)));
+
+        Response response = apiClient.createItem(item);
+
+        String responseBody = response.asString();
+        assertThat(
+                "Несоответствие схемы ответа при создании объявления сервера",
+                responseBody,
+                matchesJsonSchemaInClasspath("create-response-schema.json")
+        );
+
+        createdIds.add(UUID.fromString(response.jsonPath().getString("id")));
+        assertItemResponse(response, item);
+
+    }
+
+    @DisplayName("TAS-008: Создание объявления позитивное c нулевым contacts")
+    @Test
+    @Description("Должна быть возможность создать объявление с нулевым contacts, поскольку возможна ситуация, когда никто" +
+            "не связывался с продавцом по объявлению")
+    void createItemZeroContactsSuccess() throws IOException {
+        markPositive();
+
+        NewItem item = TestDataFactory.createValidItemWithSetValue(
+                i -> i.setStatistics(new Statistics(2, 2, 0)));
+
+        Response response = apiClient.createItem(item);
+
+        String responseBody = response.asString();
+        assertThat(
+                "Несоответствие схемы ответа при создании объявления сервера",
+                responseBody,
+                matchesJsonSchemaInClasspath("create-response-schema.json")
+        );
+
+        createdIds.add(UUID.fromString(response.jsonPath().getString("id")));
+        assertItemResponse(response, item);
+
+    }
+
 
     @AfterEach
-    public void deleteCreatedItem() {
+    public void deleteCreatedItems() {
 
         createdIds.stream()
                 .map(uuid -> apiClient.deleteItem(uuid));
@@ -195,10 +302,7 @@ public class ItemApiTest extends BaseTest {
 //        RestAssured.baseURI = "http://localhost";
 //        RestAssured.port = PORT;
 
-        CustomNewItem item = TestDataFactory.createItemWithCustomValue(
-                TestDataFactory.InvalidField.SELLER_ID,
-                uncorrectedSellerId
-        );
+        CustomNewItem item = TestDataFactory.createItemWithCustomValue(customNewItem -> customNewItem.setSellerId(uncorrectedSellerId));
 
         Response response = apiClient.createCustomItem(item);
 
@@ -209,7 +313,7 @@ public class ItemApiTest extends BaseTest {
                 matchesJsonSchemaInClasspath("bad-request-schema.json")
         );
 
-        CustomAssertions.assertBadRequestResponse(response, TestDataFactory.InvalidField.SELLER_ID.getFieldName());
+        assertBadRequestResponse(response, TestDataFactory.InvalidField.SELLER_ID.getFieldName());
 
         //МОКИ
         mockServer.stop();
@@ -240,13 +344,13 @@ public class ItemApiTest extends BaseTest {
         NewItem newItem = TestDataFactory.createValidItem();
 
         String newItemInvalidSellerId = String.format("""
-                {
-                  "sellerID": %s,
-                  "name": %s,
-                  "price": %d,
-                  "statistics": { "likes": %d, "viewCount": %d, "contacts": %d }
-                }
-                """,
+                        {
+                          "sellerID": %s,
+                          "name": %s,
+                          "price": %d,
+                          "statistics": { "likes": %d, "viewCount": %d, "contacts": %d }
+                        }
+                        """,
                 invalidSellerId,
                 newItem.getName(), newItem.getPrice(),
                 newItem.getStatistics().getLikes(),
@@ -263,7 +367,7 @@ public class ItemApiTest extends BaseTest {
                 matchesJsonSchemaInClasspath("bad-request-schema.json")
         );
 
-        CustomAssertions.assertBadRequestResponse(response, TestDataFactory.InvalidField.SELLER_ID.getFieldName());
+        assertBadRequestResponse(response, TestDataFactory.InvalidField.SELLER_ID.getFieldName());
 
         //МОКИ
         mockServer.stop();
@@ -277,172 +381,143 @@ public class ItemApiTest extends BaseTest {
         );
     }
 
-//    @DisplayName("POS-002: Получение объявления по существующему ID")
-//    @Test
-//    @Description("Проверка получения ранее созданного объявления")
-//    void getItemById_existingId_success() {
-//        markPositive();
-//
-//        // Arrange: create item first
-//        Item item = TestDataFactory.createValidItem();
-//        String itemId = apiClient.createItem(item).as(Item.class).getId();
+    @DisplayName("TAS-018: Создание объявления негативное с пустым name")
+    @Test
+    @Description("Проверка обработки значений name")
+    void createItemWithNullName() throws IOException {
+        markNegative();
 
-    // Act
-//        Response response = apiClient.getItemById(itemId);
+        NewItem item = TestDataFactory.createValidItemWithSetValue(i -> i.setName(""));
 
-    // Assert
-//        assertThat(response.statusCode()).isEqualTo(200);
-//        assertThat(response.as(Item.class).getId()).isEqualTo(itemId);
-//    }
-//
-//    @DisplayName("POS-003: Получение всех объявлений продавца")
-//    @Test
-//    @Description("Проверка получения списка объявлений по sellerId")
-//    void getItemsBySellerId_existingSeller_success() {
-//        markPositive();
-//
-//        Long sellerId = TestDataFactory.generateUniqueSellerId();
+        Response response = apiClient.createItem(item);
 
-    // Create 2 items for same seller
-//        Item item1 = TestDataFactory.createValidItem();
-//        item1.setSellerId(sellerId);
-//        Item item2 = TestDataFactory.createValidItem();
-//        item2.setSellerId(sellerId);
-//
-//        apiClient.createItem(item1);
-//        apiClient.createItem(item2);
-//
-//        Response response = apiClient.getItemsBySellerId(sellerId);
-//
-//        assertThat(response.statusCode()).isEqualTo(200);
-//        Item[] items = response.as(Item[].class);
-//        assertThat(items).hasSizeGreaterThanOrEqualTo(2);
-//        assertThat(items).extracting("sellerId").containsOnly(sellerId);
-//    }
-//
-//    @DisplayName("POS-004: Получение статистики по объявлению (v1)")
-//    @Test
-//    @Description("Проверка получения статистики для существующего объявления")
-//    void getStatisticV1_existingId_success() {
-//        markPositive();
-//
-//        Item item = TestDataFactory.createValidItem();
-//        String itemId = apiClient.createItem(item).as(Item.class).getId();
+        String responseBody = response.asString();
+        assertThat(
+                "Несоответствие схемы ответа при ошибке входных данных для создании объявления",
+                responseBody,
+                matchesJsonSchemaInClasspath("bad-request-schema.json")
+        );
 
-//        Response response = apiClient.getStatisticV1(itemId);
+        assertBadRequestResponse(response, TestDataFactory.InvalidField.NAME.getFieldName());
 
-//        assertStatisticsListResponse(response);
-//    }
-//
-//    @DisplayName("NEG-001: Создание объявления с пустым именем")
-//    @ParameterizedTest
-//    @ValueSource(strings = {"", "   "})
-//    @Description("Проверка отклонения объявления с невалидным именем")
-//    void createItem_emptyName_badRequest(String name) {
-//        markNegative();
-//
-//        Item item = TestDataFactory.createValidItem();
-//        item.setName(name);
-//
-//        Response response = apiClient.createItem(item);
-//
-//        assertErrorResponse(response, 400);
-//        assertThat(response.jsonPath().getString("result.message")).isNotBlank();
-//    }
-//
-//    @DisplayName("NEG-002: Создание объявления с отрицательной ценой")
-//    @Test
-//    @Description("Проверка валидации цены")
-//    void createItem_negativePrice_badRequest() {
-//        markNegative();
-//
-//        Item item = TestDataFactory.createInvalidItem(
-//                TestDataFactory.InvalidField.NEGATIVE_PRICE);
-//
-//        Response response = apiClient.createItem(item);
-//
-//        assertErrorResponse(response, 400);
-//    }
-//
-//    @DisplayName("NEG-003: Получение несуществующего объявления")
-//    @Test
-//    @Description("Проверка обработки 404 для несуществующего ID")
-//    void getItemById_nonExistentId_notFound() {
-//        markNegative();
-//
-//        Response response = apiClient.getItemById("non_existent_999999");
-//
-//        assertErrorResponse(response, 404);
-//    }
-//
-//    @DisplayName("NEG-004: Получение объявлений с невалидным sellerId")
-//    @ParameterizedTest
-//    @ValueSource(strings = {"", "abc", "-123"})
-//    @Description("Проверка валидации формата sellerId")
-//    void getItemsBySellerId_invalidSellerId_badRequest(Long sellerId) {
-//        markNegative();
-//
-//        Response response = apiClient.getItemsBySellerId(sellerId);
-//
-//        // API может вернуть 400 или 404 в зависимости от реализации
-//        assertThat(response.statusCode()).isIn(400, 404);
-//    }
-//
-//    @DisplayName("COR-001: Идемпотентность создания (одинаковые данные)")
-//    @Test
-//    @Description("Проверка поведения при повторной отправке идентичного запроса")
-//    void createItem_idempotency_cornerCase() {
-//        markCorner();
-//
-//        Item item = TestDataFactory.createValidItem();
-    // Force same ID for idempotency test
-//        String fixedId = "idem_" + System.currentTimeMillis();
-//        item.setId(fixedId);
+    }
 
-    // First creation
-//        Response response1 = apiClient.createItem(item);
-//        assertThat(response1.statusCode()).isEqualTo(200);
-//
-//        // Second creation with same data
-//        Response response2 = apiClient.createItem(item);
-//
-//        // В зависимости от бизнес-логики: либо 200 с тем же ID, либо 409/400
-//        // Здесь проверяем, что система ведёт себя предсказуемо
-//        assertThat(response2.statusCode()).isIn(200, 400, 409);
+    @DisplayName("TAS-019: Создание объявления негативное с числом в name")
+    @Test
+    @Description("Проверка обработки типов name")
+    void createItemWithNumberName() throws IOException {
+
+        markNegative();
+
+        CustomNewItem item = TestDataFactory.createItemWithCustomValue(
+                customNewItem -> customNewItem.setName(10));
+
+        Response response = apiClient.createCustomItem(item);
+
+        String responseBody = response.asString();
+        assertThat(
+                "Несоответствие схемы ответа при ошибке входных данных для создании объявления",
+                responseBody,
+                matchesJsonSchemaInClasspath("bad-request-schema.json")
+        );
+
+        assertBadRequestResponse(response, TestDataFactory.InvalidField.NAME.getFieldName());
+
+    }
+
+    @DisplayName("TAS-020: Создание объявления негативное с отрицательным price")
+    @Test
+    @Description("Проверка логики обработки отрицательного price")
+    void createItemWithNegativePrice() {
+
+        markNegative();
+
+        NewItem item = TestDataFactory.createValidItemWithSetValue(
+                newItem -> newItem.setPrice(-10000L));
+
+        Response response = apiClient.createItem(item);
+
+        String responseBody = response.asString();
+        assertThat(
+                "Несоответствие схемы ответа при ошибке входных данных для создании объявления",
+                responseBody,
+                matchesJsonSchemaInClasspath("bad-request-schema.json")
+        );
+
+        assertBadRequestResponse(response, TestDataFactory.InvalidField.PRICE.getFieldName());
+
+    }
+
+    @DisplayName("TAS-021: Создание объявления негативное с нулевым price")
+    @Test
+    @Description("Проверка логики обработки нулевого price")
+    void createItemWithZeroPrice() {
+
+        markNegative();
+
+        NewItem item = TestDataFactory.createValidItemWithSetValue(
+                newItem -> newItem.setPrice(0L));
+
+        Response response = apiClient.createItem(item);
+
+        String responseBody = response.asString();
+        assertThat(
+                "Несоответствие схемы ответа при ошибке входных данных для создании объявления",
+                responseBody,
+                matchesJsonSchemaInClasspath("bad-request-schema.json")
+        );
+
+        assertBadRequestResponse(response, TestDataFactory.InvalidField.PRICE.getFieldName());
+
+    }
+
+    @DisplayName("TAS-022: Создание объявления негативное с невалидным телом")
+    @Test
+    @Description("Проверка логики обработки невалидного тела запроса")
+    void createItemWithInvalidRequest() {
+
+        markNegative();
+
+        String newItemWithoutStatisticRequestBody = """
+                        {
+                          "sellerID": 1234,
+                          "name": "name",
+                          "price": 1234
+                        }
+                        """;
+
+        String newItemInvalidRequestBody = """
+                        {
+                          "dss": 1234,
+                          "nm": "name",
+                          "pr": 1234
+                        }
+                        """;
+
+        Response responseWithoutStatistic = apiClient.createItemFromString(newItemWithoutStatisticRequestBody);
+
+        Response responseItemInvalid = apiClient.createItemFromString(newItemInvalidRequestBody);
+
+        String responseWithoutStatisticBody = responseWithoutStatistic.asString();
+        assertThat(
+                "Несоответствие схемы ответа при ошибке входных данных для создании объявления",
+                responseWithoutStatisticBody,
+                matchesJsonSchemaInClasspath("bad-request-schema.json")
+        );
+
+        String responseItemInvalidBody = responseWithoutStatistic.asString();
+        assertThat(
+                "Несоответствие схемы ответа при ошибке входных данных для создании объявления",
+                responseItemInvalidBody,
+                matchesJsonSchemaInClasspath("bad-request-schema.json")
+        );
+
+        assertBadRequestResponse(responseWithoutStatistic, "теле запроса");
+        assertBadRequestResponse(responseItemInvalid, "теле запроса");
+
+    }
+
+
+
 }
-
-//    @DisplayName("COR-002: Граничные значения цены")
-//    @ParameterizedTest
-//    @ValueSource(doubles = {0.01, 999999.99, 1e10})
-//    @Description("Проверка обработки граничных значений цены")
-//    void createItem_boundaryPrices_success(double price) {
-//        markCorner();
-//
-//        Item item = TestDataFactory.createValidItem();
-//        item.setPrice(price);
-//
-//        Response response = apiClient.createItem(item);
-
-// API должен принять валидные числовые значения
-// Если цена слишком большая - ожидаем 400
-//        if (price > 1e9) {
-//            assertThat(response.statusCode()).isIn(200, 400);
-//        } else {
-//            assertThat(response.statusCode()).isEqualTo(200);
-//        }
-//    }
-
-//    @DisplayName("PERF-001: Время ответа создания объявления")
-//    @Test
-//    @Description("Нефункциональная проверка: время ответа < 2000ms")
-//    void createItem_responseTime_performance() {
-//        Item item = TestDataFactory.createValidItem();
-//
-//        long startTime = System.currentTimeMillis();
-//        Response response = apiClient.createItem(item);
-//        long duration = System.currentTimeMillis() - startTime;
-//
-//        assertThat(response.statusCode()).isEqualTo(200);
-//        assertThat(duration).isLessThan(2000); // 2 seconds threshold
-//    }
 

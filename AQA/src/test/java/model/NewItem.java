@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import model.customModels.CustomNewItem;
 
 @Data
 @Builder
@@ -19,4 +20,19 @@ public class NewItem {
     private String name;
     private Long price;
     private Statistics statistics;
+
+    public static NewItem newItemFromCustom(CustomNewItem customNewItem) {
+
+        try {
+            return NewItem.builder()
+                    .sellerId((Long) customNewItem.getSellerId())
+                    .name((String) customNewItem.getName())
+                    .price((Long) customNewItem.getPrice())
+                    .statistics(customNewItem.getSimpleItemStatistics())
+                    .build();
+        } catch (ClassCastException cce) {
+            return null;
+        }
+
+    }
 }
