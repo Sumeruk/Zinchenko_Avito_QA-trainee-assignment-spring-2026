@@ -54,6 +54,14 @@ public class ApiClient {
                 .get(Config.getV1Path() + "/{sellerID}/item");
     }
 
+    public Response getItemsByStringSellerId(String sellerId) {
+
+        return given().spec(spec)
+                .pathParam("sellerID", sellerId)
+                .when()
+                .get(Config.getV1Path() + "/{sellerID}/item");
+    }
+
     public Response getStatisticV1(UUID id) {
         return given().spec(spec)
                 .pathParam("id", id)
@@ -64,6 +72,13 @@ public class ApiClient {
     // ========== API v2 ==========
 
     public Response deleteItem(UUID id) {
+        return given().spec(spec)
+                .pathParam("id", id)
+                .when()
+                .delete(Config.getV2Path() + "/item/{id}");
+    }
+
+    public Response deleteItem(String id) {
         return given().spec(spec)
                 .pathParam("id", id)
                 .when()

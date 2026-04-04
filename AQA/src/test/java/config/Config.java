@@ -49,8 +49,6 @@ public class Config {
 //        RestAssured.baseURI = "http://localhost";
 //        RestAssured.port = 8080;
 
-        System.out.println("DEBUG --- УРЛ " + getBaseUrl());
-
         return RestAssured.given()
                 .config(RestAssuredConfig.config()
                         .httpClient(HttpClientConfig.httpClientConfig()

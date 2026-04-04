@@ -5,10 +5,12 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import java.time.ZonedDateTime;
+import java.util.UUID;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import model.NewItem;
 import utils.CustomZonedDateTimeDeserializer;
 import utils.CustomZonedDateTimeSerializer;
 import model.Statistics;
@@ -24,10 +26,21 @@ public class CreatedItem {
     private String id;
     private Long sellerId;
     private String name;
-    private Integer price;
+    private Long price;
     private Statistics statistics;
     @JsonDeserialize(using = CustomZonedDateTimeDeserializer.class)
     @JsonSerialize(using = CustomZonedDateTimeSerializer.class)
     private ZonedDateTime createdAt;
+
+    public static CreatedItem fromNewItem(String id, ZonedDateTime createdAt, NewItem newItem) {
+        return CreatedItem.builder()
+                .id(id)
+                .createdAt(createdAt)
+                .name(newItem.getName())
+                .sellerId(newItem.getSellerId())
+                .price(newItem.getPrice())
+                .statistics(newItem.getStatistics())
+                .build();
+    }
 
 }

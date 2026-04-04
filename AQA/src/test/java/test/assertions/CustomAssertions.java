@@ -6,9 +6,11 @@ import io.restassured.response.Response;
 import java.time.Duration;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import java.util.function.Consumer;
 import model.NewItem;
 import model.Statistics;
 import model.responses.CreatedItem;
@@ -17,6 +19,7 @@ import org.assertj.core.api.SoftAssertions;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 
 public class CustomAssertions {
@@ -140,7 +143,7 @@ public class CustomAssertions {
     }
 
     public static void assertBadRequestResponse(Response response, String badFieldName) {
-        assertErrorResponse(response, 400, badFieldName, softly -> {
+        assertErrorResponse(response, 400, softly -> {
             softly.assertThat(response.jsonPath().getString("result.message"))
                     .as(String.format("Нет информации о некорректном поле %s в message, пришедший ответ %s",
                             badFieldName,
@@ -151,7 +154,7 @@ public class CustomAssertions {
     }
 
     public static void assertNotFoundResponse(Response response, UUID id) {
-        assertErrorResponse(response, 404, String.valueOf(id), softly -> {
+        assertErrorResponse(response, 404, softly -> {
             softly.assertThat(response.jsonPath().getString("result.message"))
                     .as(String.format("Нет информации о некорректном значении id в message, пришедший ответ %s",
                             response.body().asString()))
@@ -161,17 +164,16 @@ public class CustomAssertions {
     }
 
     public static void assertInvalidIdResponse(Response response) {
-        assertErrorResponse(response, 400, "некорректном идентификаторе", softly -> {
+        assertErrorResponse(response, 400, softly -> {
             softly.assertThat(response.jsonPath().getString("result.message"))
                     .as(String.format("Нет информации о некорректном значении id в message, пришедший ответ %s",
                             response.body().asString()))
                     .isNotNull()
-                    .containsAnyOf("некорреrтный", "идентификатор");
+                    .containsAnyOf("некорректный", "идентификатор");
         });
     }
 
     private static void assertErrorResponse(Response response, int expectedStatus,
-                                            String description,
                                             java.util.function.Consumer<SoftAssertions> assertions) {
 
         SoftAssertions softly = new SoftAssertions();
@@ -238,6 +240,19 @@ public class CustomAssertions {
         softly.assertAll();
 
 
+    }
+
+    public static void assertExistItemsAtListResponse(Response responseSellerItems, List<CreatedItem> createdItems) {
+
+        List<CreatedItem> allItemsOfSeller = responseSellerItems.body().as(new TypeRef<>() {
+        });
+
+        List<CreatedItem> missing = new ArrayList<>(createdItems);
+        missing.removeAll(allItemsOfSeller);
+
+        assertThat(missing)
+                .as("Созданные объявления, которых нет в списке")
+                .isEmpty();
     }
 
     /**

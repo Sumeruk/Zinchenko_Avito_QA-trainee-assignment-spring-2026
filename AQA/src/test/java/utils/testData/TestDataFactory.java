@@ -42,6 +42,19 @@ public class TestDataFactory {
                 .build();
     }
 
+    public static CustomNewItem createValidCustomItem() {
+        return CustomNewItem.builder()
+                .sellerId(faker.number().randomNumber())
+                .name(faker.commerce().productName())
+                .price(faker.number().randomNumber())
+                .statistics(CustomStatistics.builder()
+                        .likes(3)
+                        .viewCount(3)
+                        .contacts(3)
+                        .build())
+                .build();
+    }
+
     /**
      * Генерирует Item с минимально допустимыми значениями
      */
