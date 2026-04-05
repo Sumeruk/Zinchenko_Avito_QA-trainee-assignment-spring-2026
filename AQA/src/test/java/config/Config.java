@@ -45,10 +45,6 @@ public class Config {
         RestAssured.baseURI = getBaseUrl();
         RestAssured.port = -1;
 
-        // моки
-//        RestAssured.baseURI = "http://localhost";
-//        RestAssured.port = 8080;
-
         return RestAssured.given()
                 .config(RestAssuredConfig.config()
                         .httpClient(HttpClientConfig.httpClientConfig()

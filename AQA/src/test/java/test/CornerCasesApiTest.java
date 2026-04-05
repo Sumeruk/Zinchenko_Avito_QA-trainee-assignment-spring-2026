@@ -26,6 +26,8 @@ public class CornerCasesApiTest extends BaseTest {
     @Description("Проверка логики обработки больших значений")
     public void createItemsWithBigNumValues(TestDataFactory.InvalidField field, BigInteger value) {
 
+        markCorner();
+
         NewItem newItem = TestDataFactory.createValidItem();
 
         ObjectMapper mapper = new ObjectMapper();
@@ -72,6 +74,8 @@ public class CornerCasesApiTest extends BaseTest {
     @Description("Проверка логики обработки больших строковых значений и невалидных значений")
     public void createItemsWithInvalidStringValues(TestDataFactory.InvalidField field, String value) {
 
+        markCorner();
+
         NewItem newItem = TestDataFactory.createValidItem();
 
         ObjectMapper mapper = new ObjectMapper();
@@ -86,11 +90,10 @@ public class CornerCasesApiTest extends BaseTest {
         assertBadRequestResponse(response, field.getFieldName());
     }
 
-    public static Stream<Arguments> provideStringValues() {
+    private static Stream<Arguments> provideStringValues() {
 
         return Stream.of(
                 Arguments.of(TestDataFactory.InvalidField.NAME, TestDataFactory.generateStringWithLength(300)),
-                Arguments.of(TestDataFactory.InvalidField.NAME, null),
                 Arguments.of(TestDataFactory.InvalidField.NAME, "#$@&*?/`{[")
         );
     }

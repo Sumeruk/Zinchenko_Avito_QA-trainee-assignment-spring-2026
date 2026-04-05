@@ -7,11 +7,15 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Stream;
 import mock.ItemMockServer;
 import model.NewItem;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import utils.testData.TestDataFactory;
 
 import static io.restassured.module.jsv.JsonSchemaValidator.matchesJsonSchemaInClasspath;
@@ -27,23 +31,13 @@ public class DeleteItemsApiTest extends BaseTest {
 
     private List<UUID> createdIds = new ArrayList<>();
 
-    // МОКИ
-    private static ItemMockServer mockServer;
-    private static final int PORT = 8080;
-
     @DisplayName("TAS-010: Удаление объявления позитивное")
-    @Test
+    @ParameterizedTest()
+    @MethodSource("provideValidItem")
     @Description("Проверка удаления информации об объявлении")
-    void deleteItemSuccess() throws IOException {
+    void deleteItemSuccess(NewItem newItem)  {
+
         markPositive();
-
-        // МОКИ
-//        mockServer = new ItemMockServer(PORT);
-//        mockServer.start();
-//        RestAssured.baseURI = "http://localhost";
-//        RestAssured.port = PORT;
-
-        NewItem newItem = TestDataFactory.createValidItem();
 
         Response responseCreate = apiClient.createItem(newItem);
 
@@ -67,9 +61,6 @@ public class DeleteItemsApiTest extends BaseTest {
         assertItemAtSellerList(newItem.getSellerId(), idCreatedItem);
 
         assertNotFoundStatistic(idCreatedItem);
-
-        // МОКИ
-//        mockServer.stop();
 
     }
 
@@ -95,18 +86,12 @@ public class DeleteItemsApiTest extends BaseTest {
     }
 
     @DisplayName("TAS-014: Удаление объявления повторное")
-    @Test
+    @ParameterizedTest()
+    @MethodSource("provideValidItem")
     @Description("Проверка работы сервера при удалении уже отсутствующего объявления")
-    void doubleDeleteItemSuccess() throws IOException {
+    void doubleDeleteItemSuccess(NewItem newItem)  {
+
         markPositive();
-
-        // МОКИ
-//        mockServer = new ItemMockServer(PORT);
-//        mockServer.start();
-//        RestAssured.baseURI = "http://localhost";
-//        RestAssured.port = PORT;
-
-        NewItem newItem = TestDataFactory.createValidItem();
 
         Response responseCreate = apiClient.createItem(newItem);
 
@@ -127,24 +112,15 @@ public class DeleteItemsApiTest extends BaseTest {
 
         assertNotFoundResponse(responseDelete, idCreatedItem);
 
-        // МОКИ
-//        mockServer.stop();
-
     }
 
     @DisplayName("TAS-015: Удаление объявления с невалидным UUID")
-    @Test
+    @ParameterizedTest()
+    @MethodSource("provideInvalidUUID")
     @Description("Проверка работы сервера при удалении уже отсутствующего объявления")
-    void deleteWithInvalidIdSuccess() throws IOException {
+    void deleteWithInvalidIdSuccess(String generatedUUID)  {
+
         markPositive();
-
-        // МОКИ
-//        mockServer = new ItemMockServer(PORT);
-//        mockServer.start();
-//        RestAssured.baseURI = "http://localhost";
-//        RestAssured.port = PORT;
-
-        String generatedUUID = TestDataFactory.generateSimpleStringItemId();
 
         Response response = apiClient.deleteItem(generatedUUID);
 
@@ -157,12 +133,6 @@ public class DeleteItemsApiTest extends BaseTest {
 
         assertInvalidIdResponse(response);
 
-        // МОКИ
-//        mockServer.stop();
-
     }
-
-
-
 
 }

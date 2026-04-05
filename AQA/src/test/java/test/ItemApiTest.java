@@ -3,7 +3,6 @@ package test;
 import model.Statistics;
 import io.qameta.allure.Description;
 import io.restassured.response.Response;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -31,23 +30,13 @@ public class ItemApiTest extends BaseTest {
 
     private List<UUID> createdIds = new ArrayList<>();
 
-    // МОКИ
-    private static ItemMockServer mockServer;
-    private static final int PORT = 8080;
-
     @DisplayName("TAS-001: Создание объявления позитивное")
-    @Test
+    @ParameterizedTest()
+    @MethodSource("provideValidItem")
     @Description("Проверка успешного создания объявления")
-    void createItemValidDataSuccess() throws IOException {
+    void createItemValidDataSuccess(NewItem newItem) {
+
         markPositive();
-
-        // МОКИ
-//        mockServer = new ItemMockServer(PORT);
-//        mockServer.start();
-//        RestAssured.baseURI = "http://localhost";
-//        RestAssured.port = PORT;
-
-        NewItem newItem = TestDataFactory.createValidItem();
 
         Response response = apiClient.createItem(newItem);
 
@@ -62,24 +51,15 @@ public class ItemApiTest extends BaseTest {
         createdIds.add(UUID.fromString(response.jsonPath().getString("id")));
         assertItemResponse(response, newItem);
 
-        // МОКИ
-//        mockServer.stop();
-
     }
 
     @DisplayName("TAS-002: Создание объявления позитивное многократное")
-    @Test
+    @ParameterizedTest()
+    @MethodSource("provideValidItem")
     @Description("Проверка успешного создания объявления c одинаковым телом запроса")
-    void createItemValidDataSuccessMultiply() throws IOException {
+    void createItemValidDataSuccessMultiply(NewItem newItem) {
+
         markPositive();
-
-        // МОКИ
-//        mockServer = new ItemMockServer(PORT);
-//        mockServer.start();
-//        RestAssured.baseURI = "http://localhost";
-//        RestAssured.port = PORT;
-
-        NewItem newItem = TestDataFactory.createValidItem();
 
         List<Response> responses = new ArrayList<>();
 
@@ -101,26 +81,17 @@ public class ItemApiTest extends BaseTest {
 
         assertItemResponsesList(responses, newItem);
 
-        // МОКИ
-//        mockServer.stop();
-
     }
 
     @DisplayName("TAS-003: Создание объявления с максимальным price")
-    @Test
+    @ParameterizedTest()
+    @MethodSource("provideMaxPriceItem")
     @Description("Проверка успешного создания объявления с максимальным price")
-    void createItemMaxPriceSuccess() throws IOException {
+    void createItemMaxPriceSuccess(NewItem maxPriceItem) {
+
         markPositive();
 
-        // МОКИ
-//        mockServer = new ItemMockServer(PORT);
-//        mockServer.start();
-//        RestAssured.baseURI = "http://localhost";
-//        RestAssured.port = PORT;
-
-        NewItem item = TestDataFactory.createValidItemWithSetValue(i -> i.setPrice(Long.MAX_VALUE));
-
-        Response response = apiClient.createItem(item);
+        Response response = apiClient.createItem(maxPriceItem);
 
         String responseBody = response.asString();
         assertThat(
@@ -130,28 +101,26 @@ public class ItemApiTest extends BaseTest {
         );
 
         createdIds.add(UUID.fromString(response.jsonPath().getString("id")));
-        assertItemResponse(response, item);
+        assertItemResponse(response, maxPriceItem);
 
-        // МОКИ
-//        mockServer.stop();
+    }
 
+    private static Stream<Arguments> provideMaxPriceItem() {
+
+        return Stream.of(
+                Arguments.of(TestDataFactory.createValidItemWithSetValue(i -> i.setPrice(Long.MAX_VALUE)))
+        );
     }
 
     @DisplayName("TAS-004: Создание объявления позитивное c отрицательным sellerId")
-    @Test
+    @ParameterizedTest()
+    @MethodSource("provideNegativeSellerIdItem")
     @Description("Поскольку в постановке сказано, что sellerId - целое число, оно может быть отрицательным")
-    void createItemNegativeSellerIdSuccess() throws IOException {
+    void createItemNegativeSellerIdSuccess(NewItem negativeSellerIdItem) {
+
         markPositive();
 
-        // МОКИ
-//        mockServer = new ItemMockServer(PORT);
-//        mockServer.start();
-//        RestAssured.baseURI = "http://localhost";
-//        RestAssured.port = PORT;
-
-        NewItem item = TestDataFactory.createValidItemWithSetValue(i -> i.setSellerId(-123L));
-
-        Response response = apiClient.createItem(item);
+        Response response = apiClient.createItem(negativeSellerIdItem);
 
         String responseBody = response.asString();
         assertThat(
@@ -161,28 +130,26 @@ public class ItemApiTest extends BaseTest {
         );
 
         createdIds.add(UUID.fromString(response.jsonPath().getString("id")));
-        assertItemResponse(response, item);
+        assertItemResponse(response, negativeSellerIdItem);
 
-        // МОКИ
-//        mockServer.stop();
+    }
 
+    private static Stream<Arguments> provideNegativeSellerIdItem() {
+
+        return Stream.of(
+                Arguments.of(TestDataFactory.createValidItemWithSetValue(i -> i.setSellerId(-123L)))
+        );
     }
 
     @DisplayName("TAS-005: Создание объявления позитивное c нулевым sellerId")
-    @Test
+    @ParameterizedTest()
+    @MethodSource("provideZeroSellerIdItem")
     @Description("Поскольку в постановке сказано, что sellerId - целое число, оно может быть нулем")
-    void createItemZeroSellerIdSuccess() throws IOException {
+    void createItemZeroSellerIdSuccess(NewItem zeroSellerIdItem) {
+
         markPositive();
 
-        // МОКИ
-//        mockServer = new ItemMockServer(PORT);
-//        mockServer.start();
-//        RestAssured.baseURI = "http://localhost";
-//        RestAssured.port = PORT;
-
-        NewItem item = TestDataFactory.createValidItemWithSetValue(i -> i.setSellerId(0L));
-
-        Response response = apiClient.createItem(item);
+        Response response = apiClient.createItem(zeroSellerIdItem);
 
         String responseBody = response.asString();
         assertThat(
@@ -192,30 +159,26 @@ public class ItemApiTest extends BaseTest {
         );
 
         createdIds.add(UUID.fromString(response.jsonPath().getString("id")));
-        assertItemResponse(response, item);
-
-        // МОКИ
-//        mockServer.stop();
+        assertItemResponse(response, zeroSellerIdItem);
 
     }
 
-    @DisplayName("TAS-006: Создание объявления позитивное c нулевым likes")
-    @Test
-    @Description("Должна быть возможность создать объявление с нулевым likes, поскольку возможна ситуация, когда никто" +
-            "не добавит объявление в избранное")
-    void createItemZeroLikesSuccess() throws IOException {
+    private static Stream<Arguments> provideZeroSellerIdItem() {
+
+        return Stream.of(
+                Arguments.of(TestDataFactory.createValidItemWithSetValue(i -> i.setSellerId(0L)))
+        );
+    }
+
+    @DisplayName("TAS-006: Создание объявления позитивное c нулевыми полями статистики")
+    @ParameterizedTest()
+    @MethodSource("provideZeroStatistics")
+    @Description("Должна быть возможность создать объявление с нулевыми полями статистики (likes, viewCount, contacts)")
+    void createItemZeroLikesSuccess(NewItem zeroStatisticsItem) {
+
         markPositive();
 
-        // МОКИ
-//        mockServer = new ItemMockServer(PORT);
-//        mockServer.start();
-//        RestAssured.baseURI = "http://localhost";
-//        RestAssured.port = PORT;
-
-        NewItem item = TestDataFactory.createValidItemWithSetValue(
-                i -> i.setStatistics(new Statistics(0, 2, 2)));
-
-        Response response = apiClient.createItem(item);
+        Response response = apiClient.createItem(zeroStatisticsItem);
 
         String responseBody = response.asString();
         assertThat(
@@ -225,82 +188,38 @@ public class ItemApiTest extends BaseTest {
         );
 
         createdIds.add(UUID.fromString(response.jsonPath().getString("id")));
-        assertItemResponse(response, item);
-        // МОКИ
-//        mockServer.stop();
+        assertItemResponse(response, zeroStatisticsItem);
+
 
     }
 
-    @DisplayName("TAS-007: Создание объявления позитивное c нулевым viewCount")
-    @Test
-    @Description("Должна быть возможность создать объявление с нулевым viewCount, поскольку возможна ситуация, когда никто" +
-            "не посмотрел объявление")
-    void createItemZeroViewCountSuccess() throws IOException {
-        markPositive();
+    private static Stream<Arguments> provideZeroStatistics() {
 
-        NewItem item = TestDataFactory.createValidItemWithSetValue(
-                i -> i.setStatistics(new Statistics(2, 0, 2)));
+        return Stream.of(
+                Arguments.of(
+                        TestDataFactory.createValidItemWithSetValue(
+                                i -> i.setStatistics(new Statistics(0, 2, 2)))),
+                Arguments.of(
+                        TestDataFactory.createValidItemWithSetValue(
+                                i -> i.setStatistics(new Statistics(2, 0, 2)))),
+                Arguments.of(
+                        TestDataFactory.createValidItemWithSetValue(
+                                i -> i.setStatistics(new Statistics(2, 2, 0)))),
+                Arguments.of(
+                        TestDataFactory.createValidItemWithSetValue(
+                                i -> i.setStatistics(new Statistics(0, 0, 0))))
 
-        Response response = apiClient.createItem(item);
 
-        String responseBody = response.asString();
-        assertThat(
-                "Несоответствие схемы ответа при создании объявления сервера",
-                responseBody,
-                matchesJsonSchemaInClasspath("create-response-schema.json")
         );
-
-        createdIds.add(UUID.fromString(response.jsonPath().getString("id")));
-        assertItemResponse(response, item);
-
-    }
-
-    @DisplayName("TAS-008: Создание объявления позитивное c нулевым contacts")
-    @Test
-    @Description("Должна быть возможность создать объявление с нулевым contacts, поскольку возможна ситуация, когда никто" +
-            "не связывался с продавцом по объявлению")
-    void createItemZeroContactsSuccess() throws IOException {
-        markPositive();
-
-        NewItem item = TestDataFactory.createValidItemWithSetValue(
-                i -> i.setStatistics(new Statistics(2, 2, 0)));
-
-        Response response = apiClient.createItem(item);
-
-        String responseBody = response.asString();
-        assertThat(
-                "Несоответствие схемы ответа при создании объявления сервера",
-                responseBody,
-                matchesJsonSchemaInClasspath("create-response-schema.json")
-        );
-
-        createdIds.add(UUID.fromString(response.jsonPath().getString("id")));
-        assertItemResponse(response, item);
-
-    }
-
-
-    @AfterEach
-    public void deleteCreatedItems() {
-
-        createdIds.stream()
-                .map(uuid -> apiClient.deleteItem(uuid));
-
-        createdIds.clear();
     }
 
     @DisplayName("TAS-016: Создание объявления с некорректными типами sellerId")
     @ParameterizedTest(name = "={0}")
     @MethodSource("uncorrectedSellerIdProvider")
     @Description("Проверка обработки типов sellerId")
-    void createItemUncorrectedSellerId(Object uncorrectedSellerId) throws IOException {
-        markNegative();
+    void createItemUncorrectedSellerId(Object uncorrectedSellerId) {
 
-        //МОКИ
-//        mockServer = new ItemMockServer(PORT);
-//        mockServer.start();
-//        RestAssured.baseURI = "http://localhost";
-//        RestAssured.port = PORT;
+        markNegative();
 
         CustomNewItem item = TestDataFactory.createItemWithCustomValue(customNewItem -> customNewItem.setSellerId(uncorrectedSellerId));
 
@@ -315,11 +234,11 @@ public class ItemApiTest extends BaseTest {
 
         assertBadRequestResponse(response, TestDataFactory.InvalidField.SELLER_ID.getFieldName());
 
-        //МОКИ
-        mockServer.stop();
+
     }
 
-    static Stream<Arguments> uncorrectedSellerIdProvider() {
+    private static Stream<Arguments> uncorrectedSellerIdProvider() {
+
         return Stream.of(
                 Arguments.of(11111.3),
                 Arguments.of("abc"),
@@ -332,14 +251,9 @@ public class ItemApiTest extends BaseTest {
     @ParameterizedTest(name = "={0}")
     @MethodSource("invalidSellerIdProvider")
     @Description("Проверка корректности формата sellerId")
-    void createItemInvalidSellerId(String invalidSellerId) throws IOException {
-        markNegative();
+    void createItemInvalidSellerId(String invalidSellerId) {
 
-        //МОКИ
-//        mockServer = new ItemMockServer(PORT);
-//        mockServer.start();
-//        RestAssured.baseURI = "http://localhost";
-//        RestAssured.port = PORT;
+        markNegative();
 
         NewItem newItem = TestDataFactory.createValidItem();
 
@@ -369,11 +283,10 @@ public class ItemApiTest extends BaseTest {
 
         assertBadRequestResponse(response, TestDataFactory.InvalidField.SELLER_ID.getFieldName());
 
-        //МОКИ
-        mockServer.stop();
     }
 
-    static Stream<Arguments> invalidSellerIdProvider() {
+    private static Stream<Arguments> invalidSellerIdProvider() {
+
         return Stream.of(
                 Arguments.of("01"),
                 Arguments.of("abc01-1"),
@@ -382,12 +295,12 @@ public class ItemApiTest extends BaseTest {
     }
 
     @DisplayName("TAS-018: Создание объявления негативное с пустым name")
-    @Test
+    @ParameterizedTest()
+    @MethodSource("provideNullNameItem")
     @Description("Проверка обработки значений name")
-    void createItemWithNullName() throws IOException {
-        markNegative();
+    void createItemWithNullName(NewItem item) {
 
-        NewItem item = TestDataFactory.createValidItemWithSetValue(i -> i.setName(""));
+        markNegative();
 
         Response response = apiClient.createItem(item);
 
@@ -402,15 +315,20 @@ public class ItemApiTest extends BaseTest {
 
     }
 
+    private static Stream<Arguments> provideNullNameItem() {
+
+        return Stream.of(
+                Arguments.of(TestDataFactory.createValidItemWithSetValue(i -> i.setName("")))
+        );
+    }
+
     @DisplayName("TAS-019: Создание объявления негативное с числом в name")
-    @Test
+    @ParameterizedTest()
+    @MethodSource("provideNumNameItem")
     @Description("Проверка обработки типов name")
-    void createItemWithNumberName() throws IOException {
+    void createItemWithNumberName(CustomNewItem item) {
 
         markNegative();
-
-        CustomNewItem item = TestDataFactory.createItemWithCustomValue(
-                customNewItem -> customNewItem.setName(10));
 
         Response response = apiClient.createCustomItem(item);
 
@@ -423,6 +341,14 @@ public class ItemApiTest extends BaseTest {
 
         assertBadRequestResponse(response, TestDataFactory.InvalidField.NAME.getFieldName());
 
+    }
+
+    private static Stream<Arguments> provideNumNameItem() {
+
+        return Stream.of(
+                Arguments.of(TestDataFactory.createItemWithCustomValue(
+                        customNewItem -> customNewItem.setName(10)))
+        );
     }
 
     @DisplayName("TAS-020: Создание объявления негативное с отрицательным price")
@@ -449,16 +375,14 @@ public class ItemApiTest extends BaseTest {
     }
 
     @DisplayName("TAS-021: Создание объявления негативное с нулевым price")
-    @Test
+    @ParameterizedTest()
+    @MethodSource("provideZeroPriceItem")
     @Description("Проверка логики обработки нулевого price")
-    void createItemWithZeroPrice() {
+    void createItemWithZeroPrice(NewItem zeroPriceItem) {
 
         markNegative();
 
-        NewItem item = TestDataFactory.createValidItemWithSetValue(
-                newItem -> newItem.setPrice(0L));
-
-        Response response = apiClient.createItem(item);
+        Response response = apiClient.createItem(zeroPriceItem);
 
         String responseBody = response.asString();
         assertThat(
@@ -471,52 +395,55 @@ public class ItemApiTest extends BaseTest {
 
     }
 
+    private static Stream<Arguments> provideZeroPriceItem() {
+
+        return Stream.of(
+                Arguments.of(TestDataFactory.createValidItemWithSetValue(i -> i.setPrice(0L)))
+        );
+    }
+
+
+
     @DisplayName("TAS-022: Создание объявления негативное с невалидным телом")
-    @Test
+    @ParameterizedTest()
+    @MethodSource("provideInvalidBodyRequest")
     @Description("Проверка логики обработки невалидного тела запроса")
-    void createItemWithInvalidRequest() {
+    void createItemWithInvalidRequest(String invalidRequestBody) {
 
         markNegative();
 
-        String newItemWithoutStatisticRequestBody = """
-                        {
-                          "sellerID": 1234,
-                          "name": "name",
-                          "price": 1234
-                        }
-                        """;
+        Response response = apiClient.createItemFromString(invalidRequestBody);
 
-        String newItemInvalidRequestBody = """
-                        {
-                          "dss": 1234,
-                          "nm": "name",
-                          "pr": 1234
-                        }
-                        """;
-
-        Response responseWithoutStatistic = apiClient.createItemFromString(newItemWithoutStatisticRequestBody);
-
-        Response responseItemInvalid = apiClient.createItemFromString(newItemInvalidRequestBody);
-
-        String responseWithoutStatisticBody = responseWithoutStatistic.asString();
+        String responseBody = response.asString();
         assertThat(
                 "Несоответствие схемы ответа при ошибке входных данных для создании объявления",
-                responseWithoutStatisticBody,
+                responseBody,
                 matchesJsonSchemaInClasspath("bad-request-schema.json")
         );
 
-        String responseItemInvalidBody = responseWithoutStatistic.asString();
-        assertThat(
-                "Несоответствие схемы ответа при ошибке входных данных для создании объявления",
-                responseItemInvalidBody,
-                matchesJsonSchemaInClasspath("bad-request-schema.json")
-        );
-
-        assertBadRequestResponse(responseWithoutStatistic, "теле запроса");
-        assertBadRequestResponse(responseItemInvalid, "теле запроса");
+        assertBadRequestResponse(response, "теле запроса");
 
     }
 
+    private static Stream<Arguments> provideInvalidBodyRequest() {
+
+        return Stream.of(
+                Arguments.of("""
+                {
+                  "sellerID": 1234,
+                  "name": "name",
+                  "price": 1234
+                }
+                """),
+                Arguments.of("""
+                {
+                  "dss": 1234,
+                  "nm": "name",
+                  "pr": 1234
+                }
+                """)
+        );
+    }
 
 
 }

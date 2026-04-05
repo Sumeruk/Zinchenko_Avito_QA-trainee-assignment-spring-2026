@@ -2,20 +2,19 @@ package test;
 
 import io.qameta.allure.Description;
 import io.qameta.allure.Step;
-import io.restassured.RestAssured;
 import io.restassured.response.Response;
-import java.io.IOException;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
-import mock.ItemMockServer;
 import model.responses.CreatedItem;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 import utils.testData.TestDataFactory;
 
 import static io.restassured.module.jsv.JsonSchemaValidator.matchesJsonSchemaInClasspath;
@@ -27,35 +26,21 @@ import static test.assertions.SellerListAssertions.assertExistItemsAtListRespons
 @Tag("receivingSellersItems")
 public class ReceivingSellersItemsTest extends BaseTest {
 
-    private List<UUID> createdIds = new ArrayList<>();
+
 
     private static final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSSSSS Z Z");
-
-
-    // МОКИ
-    private static ItemMockServer mockServer;
-    private static final int PORT = 8080;
 
     @DisplayName("TAS-012: Получение списка объявлений продавца позитивное")
     @Test
     @Description("Проверка наличия созданных объявлений у пользователя")
-    void getSellersItemListSuccess() throws IOException {
+    void getSellersItemListSuccess() {
         markPositive();
-
-        // МОКИ
-        mockServer = new ItemMockServer(PORT);
-        mockServer.start();
-        RestAssured.baseURI = "http://localhost";
-        RestAssured.port = PORT;
 
         List<CreatedItem> createdItems = createItems(3);
 
         Response responseSellerItems = apiClient.getItemsBySellerId(createdItems.get(0).getSellerId());
 
         assertExistItemsAtListResponse(responseSellerItems, createdItems);
-
-        // МОКИ
-        mockServer.stop();
 
     }
 
@@ -99,12 +84,12 @@ public class ReceivingSellersItemsTest extends BaseTest {
     }
 
     @DisplayName("TAS-013: Получение списка объявлений продавца со строковым id")
-    @Test
+    @ParameterizedTest()
+    @MethodSource("provideInvalidUUID")
     @Description("Проверка получения списка объявлений по невалидному id пользователя")
-    public void getStatisticsByInvalidId() throws IOException {
-        markNegative();
+    public void getStatisticsByInvalidId(String generatedId) {
 
-        String generatedId = TestDataFactory.generateSimpleStringItemId();
+        markNegative();
 
         Response response = apiClient.getItemsByStringSellerId(generatedId);
 
@@ -117,15 +102,7 @@ public class ReceivingSellersItemsTest extends BaseTest {
 
         assertInvalidIdResponse(response);
 
-
     }
 
-    @AfterEach
-    public void deleteCreatedItems() {
 
-        createdIds.stream()
-                .map(uuid -> apiClient.deleteItem(uuid));
-
-        createdIds.clear();
-    }
 }

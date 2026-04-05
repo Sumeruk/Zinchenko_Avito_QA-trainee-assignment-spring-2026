@@ -2,16 +2,18 @@ package test;
 
 import io.qameta.allure.Description;
 import io.restassured.response.Response;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
-import mock.ItemMockServer;
+import java.util.stream.Stream;
 import model.NewItem;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import utils.testData.TestDataFactory;
 
 import static io.restassured.module.jsv.JsonSchemaValidator.matchesJsonSchemaInClasspath;
@@ -26,23 +28,13 @@ public class StatisticsApiTest extends BaseTest {
 
     private List<UUID> createdIds = new ArrayList<>();
 
-    // МОКИ
-    private static ItemMockServer mockServer;
-    private static final int PORT = 8080;
-
     @DisplayName("TAS-009: Получение статистики объявления позитивное")
-    @Test
+    @ParameterizedTest()
+    @MethodSource("provideValidItem")
     @Description("Проверка получения статистики по объявлению")
-    void createItemValidDataSuccess() throws IOException {
+    void createItemValidDataSuccess(NewItem newItem)  {
+        
         markPositive();
-
-        // МОКИ
-//        mockServer = new ItemMockServer(PORT);
-//        mockServer.start();
-//        RestAssured.baseURI = "http://localhost";
-//        RestAssured.port = PORT;
-
-        NewItem newItem = TestDataFactory.createValidItem();
 
         Response responseCreate = apiClient.createItem(newItem);
 
@@ -62,33 +54,17 @@ public class StatisticsApiTest extends BaseTest {
 
         assertStatisticsListResponse(responseStatistic, new NewItem());
 
-        // МОКИ
-//        mockServer.stop();
-
     }
 
-    @AfterEach
-    public void deleteCreatedItems() {
 
-        createdIds.stream()
-                .map(uuid -> apiClient.deleteItem(uuid));
-
-        createdIds.clear();
-    }
 
     @DisplayName("TAS-024: Получение статистики объявления негативное по несуществующему UUID")
-    @Test
+    @ParameterizedTest()
+    @MethodSource("provideValidUUID")
     @Description("Проверка получения статистики по несуществующему UUID объявления")
-    public void getStatisticsByNonexistentId() throws IOException {
+    public void getStatisticsByNonexistentId(UUID generatedUUID)  {
+        
         markNegative();
-
-        //МОКИ
-//        mockServer = new ItemMockServer(PORT);
-//        mockServer.start();
-//        RestAssured.baseURI = "http://localhost";
-//        RestAssured.port = PORT;
-
-        UUID generatedUUID = TestDataFactory.generateUniqueItemId();
 
         apiClient.deleteItem(generatedUUID);
 
@@ -103,23 +79,15 @@ public class StatisticsApiTest extends BaseTest {
 
         assertNotFoundResponse(response, generatedUUID);
 
-        //МОКИ
-//        mockServer.stop();
     }
 
     @DisplayName("TAS-025: Получение статистики объявления негативное по невалидному UUID")
-    @Test
+    @ParameterizedTest()
+    @MethodSource("provideInvalidUUID")
     @Description("Проверка получения статистики по невалидному UUID объявления")
-    public void getStatisticsByInvalidId() throws IOException {
+    public void getStatisticsByInvalidId(String generatedUUID)  {
+
         markNegative();
-
-        //МОКИ
-//        mockServer = new ItemMockServer(PORT);
-//        mockServer.start();
-//        RestAssured.baseURI = "http://localhost";
-//        RestAssured.port = PORT;
-
-        String generatedUUID = TestDataFactory.generateSimpleStringItemId();
 
         Response response = apiClient.getStatisticV2(generatedUUID);
 
@@ -132,8 +100,6 @@ public class StatisticsApiTest extends BaseTest {
 
         assertInvalidIdResponse(response);
 
-        //МОКИ
-//        mockServer.stop();
     }
 
 }
