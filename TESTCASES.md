@@ -1048,7 +1048,7 @@ POST {{baseUrl}}/{{api1}}/item c телом
 
 <ins>**ID: TAS-023**</ins> 
 
-Название: Создание объявления с большими значениями 
+Название: Создание объявления с большими числовыми значениями 
 
 Предусловие: нет
 
@@ -1059,22 +1059,6 @@ POST {{baseUrl}}/{{api1}}/item c телом
 {
   "sellerID": 123443123441234431234433,
   "name": "Строка с буквами, цифрами, пробелами, '-', '_', '.'",
-  "price": <Значение из диапазона 1-9223372036854775807>,
-  "statistics":
-    {
-      "likes": <Значение из диапазона 0-999999>,
-      "viewCount": <Значение из диапазона 0-999999>,
-      "contacts": <Значение из диапазона 0-999999>
-    }
-}
-```
-
-- отправить POST {{baseUrl}}/{{api1}}/item c телом (в поле name строка от 300 символов)
-
-```
-{
-  "sellerID": <Значение из диапазона 111111-999999>,
-  "name":  Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.",
   "price": <Значение из диапазона 1-9223372036854775807>,
   "statistics":
     {
@@ -1156,6 +1140,56 @@ POST {{baseUrl}}/{{api1}}/item c телом
 {
     "result": {
         "message": ": <сообщение о превышении длины значений>",
+        "messages": {}
+    },
+    "status": "400"
+}
+```
+
+<ins>**ID: TAS-026**</ins> 
+
+Название: Создание объявления с большими строковыми и невалидными значениями 
+
+Предусловие: нет
+
+- отправить POST {{baseUrl}}/{{api1}}/item c телом (в поле name строка от 300 символов)
+
+```
+{
+  "sellerID": <Значение из диапазона 111111-999999>,
+  "name":  "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.",
+  "price": <Значение из диапазона 1-9223372036854775807>,
+  "statistics":
+    {
+      "likes": <Значение из диапазона 0-999999>,
+      "viewCount": <Значение из диапазона 0-999999>,
+      "contacts": <Значение из диапазона 0-999999>
+    }
+}
+```
+
+- отправить POST {{baseUrl}}/{{api1}}/item c телом
+
+```
+{
+  "sellerID": <Значение из диапазона 111111-999999>,
+  "name":  "Строка с невалидными символами $#@/<>",
+  "price": <Значение из диапазона 1-9223372036854775807>,
+  "statistics":
+    {
+      "likes": <Значение из диапазона 0-999999>,
+      "viewCount": <Значение из диапазона 0-999999>,
+      "contacts": <Значение из диапазона 0-999999>
+    }
+}
+```
+Ожидаемый результат:
+- status Code 400
+- тело ответа:
+```
+{
+    "result": {
+        "message": ": <сообщение о передаче некорректного name>",
         "messages": {}
     },
     "status": "400"
