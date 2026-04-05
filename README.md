@@ -5,7 +5,8 @@
 ---
 
 Для запуска проекта и отображения Allure отчета необходимо:
-
+- Java 17
+- выполнить следующие команды:
 ```
 git clone https://github.com/Sumeruk/Zinchenko_Avito_QA-trainee-assignment-spring-2026.git
 
