@@ -27,6 +27,10 @@ public class TestDataFactory {
         return faker.lorem().sentence();
     }
 
+    public static String generateStringWithLength(int length) {
+        return faker.lorem().characters(length);
+    }
+
     /**
      * Генерирует валидный Item для позитивных тестов
      */
